@@ -1,7 +1,7 @@
 import tweepy
 import threading
 import twitter_2_album
-
+import yaml
 
 # it seems steam does not need auth?
 
@@ -12,6 +12,7 @@ class UserUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		print(data)
 		data = yaml.load(data, Loader=yaml.FullLoader)
 		r = twitter_2_album.get(data['id_str'])
 		for channel in self.db.channelsForUser(self.bot, data['user']['id']):
@@ -47,7 +48,6 @@ class Stream(object):
 			self.user_stream = None
 		if not self.user_stream:
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db, self.bot))
-			print('users', self.db.sub.users())
 			self.user_stream.filter(follow=self.db.sub.users())
 
 		if self.key_stream and not self.key_stream.running:
@@ -55,7 +55,6 @@ class Stream(object):
 			self.key_stream = None
 		if not self.key_stream:
 			self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db, self.bot))
-			print('users', self.db.sub.keys())
 			self.key_stream.filter(track=self.db.sub.keys()) # need two stream
 
 	def forceReload(self):
