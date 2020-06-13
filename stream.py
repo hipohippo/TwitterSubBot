@@ -49,18 +49,18 @@ def getCount(data):
 		return 0
 
 def isRich(data):
+	return 'media_url' in str(data)
+
+def shouldProcess(data, db):
 	try:
 		print(data['retweeted_status'])
 	except:
 		...
-	return 'media_url' in str(data)
-
-def shouldProcess(data, db):
 	if 'delete' in data:
 		return True
 	if matchKey(str(data), db.blacklist.items):
 		return False
-	bar = 100000
+	bar = 10000
 	if matchKey(str(data), db.popularlist.items):
 		bar *= 10
 	if isRich(data):
