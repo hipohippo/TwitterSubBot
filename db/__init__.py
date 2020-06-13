@@ -1,9 +1,6 @@
 import os
 import yaml
-import threading
-import time
 from telegram_util import commitRepo
-import uuid
 
 def getFile(name):
 	fn = 'db/' + name
@@ -19,15 +16,20 @@ class DBItem(object):
 	def add(self, x):
 		x = str(x).strip()
 		if not x or x in self.items:
-			return False
+			return
 		self.items.add(x)
 		with open(self.fn, 'a') as f:
 			f.write('\n' + x)
-		return True
+		commitRepo(delay_minute=0)
 
-	def contains(self, x):
-		x = str(x).strip()
-		return x in self.items
+	def remove(self, x):
+		try:
+			self.items.remove(x)
+		except:
+			pass
+		with open(self.fn, 'w') as f:
+			f.write('\n'.join(self.items))
+		commitRepo(delay_minute=0)
 
 def getUserId(text, twitterApi):
 	try:
@@ -49,6 +51,14 @@ def getSubscriptions(sub):
 		for item in sub.get(chat_id, []):
 			result.add(item)
 	return result
+
+def getChannels(bot, sub, text)
+	for chat_id in sub:
+		if text in sub.get(chat_id, []):
+			try:
+				yield bot.get_chat(chat_id)
+			except:
+				...
 
 class Subscription(object):
 	def __init__(self):
@@ -74,50 +84,40 @@ class Subscription(object):
 		else:
 			tryRemove(self.key_sub.get(chat_id), text)
 
-	def get(self, chat_id):
-		return '当前订阅：' + ' '.join(self.sub.get(chat_id, []))
+	def get(self, chat_id, twitterApi):
+		result = []
+		for user_id in self.user_sub.get(chat_id, []):
+			user = twitterApi.get_user(user_id)
+			if user:
+				result.append('[%s](%s)' % (user.name, str(user.screen_name)))
 
+		return 'subscriptions: ' + ' '.join(result + self.key_sub.get(chat_id, []))
 
-	def keywords(self):
+	def keys(self):
 		getSubscriptions(self.key_sub)
 
 	def users(self):
 		getSubscriptions(self.user_sub)
 
-	def channels(self, bot, text):
-		for chat_id in self.sub:
-			if text in self.sub.get(chat_id, []):
-				try:
-					yield bot.get_chat(chat_id)
-				except:
-					...
+	def channelsForUser(self, bot, user_id):
+		getChannels(bot, self.user_sub, user_id)
+
+	def channelsForKey(self, bot, text):
+		getChannels(bot, self.key_sub, text)
 
 	def save(self):
-		with open('db/subscription', 'w') as f:
-			f.write(yaml.dump(self.sub, sort_keys=True, indent=2, allow_unicode=True))
+		with open('db/user_sub', 'w') as f:
+			f.write(yaml.dump(self.user_sub, sort_keys=True, indent=2, allow_unicode=True))
+		with open('db/key_sub', 'w') as f:
+			f.write(yaml.dump(self.key_sub, sort_keys=True, indent=2, allow_unicode=True))
 		commitRepo(delay_minute=0)
-
-class Existing(object):
-	def __init__(self):
-		current_fn = 'existing_' + str(uuid.getnode())
-		self.current = DBItem(current_fn)
-		self.all = []
-		for fn in os.listdir('db'):
-			if fn.startswith('existing') and fn != current_fn:
-				self.all.append(DBItem(fn))
-
-	def add(self, item):
-		for dbitem in self.all:
-			if dbitem.contains(item):
-				return False
-		return self.current.add(item)
 
 class DB(object):
 	def __init__(self):
 		self.reload()
 
 	def reload(self):
-		self.existing = Existing()
+		self.queue = DBItem('queue')
 		self.blacklist = DBItem('blacklist')
 		self.popularlist = DBItem('popularlist')
 		self.subscription = Subscription()
