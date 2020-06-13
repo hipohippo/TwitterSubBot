@@ -14,7 +14,6 @@ def getTid(data):
 	return data['delete']['status']['id']
 
 def getAlbum(data):
-	data = yaml.load(data, Loader=yaml.FullLoader)
 	tid = getTid(data)
 	if tid in cache:
 		for r in cache[tid]:
@@ -31,6 +30,7 @@ class UserUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		data = yaml.load(data, Loader=yaml.FullLoader)
 		tid, r = getAlbum(data)
 		if not r:
 			return
@@ -48,6 +48,7 @@ def shouldProcess(data, db):
 	bar = 100
 	if matchKey(str(data), db.popularlist.items):
 		bar = 1000
+	print(data)
 	try:
 		if int(data.get('retweet_count')) + int(
 			data.get('favorite_count')) > bar:
@@ -63,6 +64,7 @@ class KeyUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		data = yaml.load(data, Loader=yaml.FullLoader)
 		if not shouldProcess(data, self.db):
 			return
 		tid, r = getAlbum(data)
