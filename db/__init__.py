@@ -67,6 +67,13 @@ def getChannels(bot, sub, text):
 			except:
 				...
 
+def isInt(text):
+	try:
+		int(text)
+		return True
+	except:
+		return False
+
 class Subscription(object):
 	def __init__(self):
 		with open('db/user_sub') as f:
@@ -77,8 +84,9 @@ class Subscription(object):
 	def add(self, chat_id, text, twitterApi):
 		if not text:
 			return
-		user_id = getUserId(text, twitterApi)
-
+		user_id = None
+		if '/' in text or isInt(text):
+			user_id = getUserId(text, twitterApi)
 		if user_id:
 			tryAdd(self.user_sub, chat_id, user_id)
 		else:
@@ -89,8 +97,7 @@ class Subscription(object):
 		user_id = getUserId(text, twitterApi)
 		if user_id:
 			tryRemove(self.user_sub.get(chat_id), user_id)
-		else:
-			tryRemove(self.key_sub.get(chat_id), text)
+		tryRemove(self.key_sub.get(chat_id), text)
 		self.save()
 
 	def get(self, chat_id, twitterApi):
