@@ -16,11 +16,12 @@ class DBItem(object):
 	def add(self, x):
 		x = str(x).strip()
 		if not x or x in self.items:
-			return
+			return False
 		self.items.add(x)
 		with open(self.fn, 'a') as f:
 			f.write('\n' + x)
 		commitRepo(delay_minute=0)
+		return True
 
 	def remove(self, x):
 		try:
@@ -117,7 +118,6 @@ class Subscription(object):
 	def channelsForUser(self, bot, user_id):
 		return getChannels(bot, self.user_sub, user_id)
 
-
 	def save(self):
 		with open('db/user_sub', 'w') as f:
 			f.write(yaml.dump(self.user_sub, sort_keys=True, indent=2, allow_unicode=True))
@@ -132,4 +132,5 @@ class DB(object):
 	def reload(self):
 		self.blacklist = DBItem('blacklist')
 		self.popularlist = DBItem('popularlist')
+		self.existing = DBItem('existing')
 		self.sub = Subscription()

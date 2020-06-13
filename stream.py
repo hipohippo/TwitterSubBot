@@ -55,10 +55,10 @@ def shouldProcess(data, db):
 		return False
 	bar = 10000
 	if matchKey(str(data), db.popularlist.items):
-		bar *= 100
-	if matchKey(str(data), ['media_url']):
-		bar /= 10
+		bar *= 10
 	return getCount(data) > bar
+
+# dedup
 
 class KeyUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
@@ -69,6 +69,8 @@ class KeyUpdateListender(tweepy.StreamListener):
 	def on_data(self, data):
 		data = yaml.load(data, Loader=yaml.FullLoader)
 		if not shouldProcess(data, self.db):
+			return
+		if not self.db.existing.add(data['retweeted_status']['id']):
 			return
 		tid, r = getAlbum(data)
 		if not r:
