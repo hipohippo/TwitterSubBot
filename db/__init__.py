@@ -57,7 +57,7 @@ def getSubscriptions(sub):
 	for chat_id in sub:
 		for item in sub.get(chat_id, []):
 			result.add(item)
-	return result
+	return list(result)
 
 def getChannels(bot, sub, text):
 	for chat_id in sub:
@@ -109,16 +109,16 @@ class Subscription(object):
 		return 'subscriptions: ' + ' '.join(result + self.key_sub.get(chat_id, []))
 
 	def keys(self):
-		getSubscriptions(self.key_sub)
+		return getSubscriptions(self.key_sub)
 
 	def users(self):
-		getSubscriptions(self.user_sub)
+		return [str(x) for x in getSubscriptions(self.user_sub)]
 
 	def channelsForUser(self, bot, user_id):
-		getChannels(bot, self.user_sub, user_id)
+		return getChannels(bot, self.user_sub, user_id)
 
 	def channelsForKey(self, bot, text):
-		getChannels(bot, self.key_sub, text)
+		return getChannels(bot, self.key_sub, text)
 
 	def save(self):
 		with open('db/user_sub', 'w') as f:

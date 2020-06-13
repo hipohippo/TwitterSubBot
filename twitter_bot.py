@@ -11,7 +11,7 @@ import tweepy
 
 db = DB()
 
-with open('credential') as f:
+with open('CREDENTIALS') as f:
 	credential = yaml.load(f, Loader=yaml.FullLoader)
 
 tele = Updater(credential['bot'], use_context=True)  # @twitter_send_bot
@@ -34,7 +34,7 @@ auth = tweepy.OAuthHandler(credential['twitter_consumer_key'], credential['twitt
 auth.set_access_token(credential['twitter_access_token'], credential['twitter_access_secret'])
 twitterApi = tweepy.API(auth)
 
-twitter_stream = Stream(db, twitterApi)
+twitter_stream = Stream(db, twitterApi, tele.bot)
 
 def twitterLoop():
 	try:
