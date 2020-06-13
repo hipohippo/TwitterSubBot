@@ -49,7 +49,7 @@ def getCount(data):
 		return 0
 
 def isRich(data):
-	return 'media_url' in str(data)
+	return 'expanded_url' in str(data)
 
 def shouldProcess(data, db):
 	try:
