@@ -39,6 +39,7 @@ twitter_stream = Stream(db, twitterApi, tele.bot)
 def twitterLoop():
 	try:
 		twitter_stream.reload()
+		db.reload()
 	except Exception as e:
 		debug_group.send_message('twitter_stream reload error ' + str(e))
 	threading.Timer(10 * 60, twitterLoop).start()

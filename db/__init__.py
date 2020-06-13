@@ -130,7 +130,6 @@ class DB(object):
 		self.reload()
 
 	def reload(self):
-		self.queue = DBItem('queue')
 		self.blacklist = DBItem('blacklist')
 		self.popularlist = DBItem('popularlist')
 		self.sub = Subscription()

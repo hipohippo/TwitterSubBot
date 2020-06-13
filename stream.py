@@ -40,6 +40,22 @@ class UserUpdateListender(tweepy.StreamListener):
 	def on_error(self, status_code):
 		return
 
+def shouldProcess(data, db):
+	if 'delete' in data:
+		return True
+	if matchKey(str(data), db.blacklist.items):
+		return False
+	bar = 100
+	if matchKey(str(data), db.popularlist.items):
+		bar = 1000
+	try:
+		if int(data.get('retweet_count')) + int(
+			data.get('favorite_count')) > bar:
+			return True
+	except Exception as e:
+		print(e)
+		return False
+
 class KeyUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
 		self.db = db
@@ -47,6 +63,8 @@ class KeyUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		if not shouldProcess(data, self.db):
+			return
 		tid, r = getAlbum(data)
 		if not r:
 			return
