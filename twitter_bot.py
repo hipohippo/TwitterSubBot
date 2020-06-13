@@ -7,6 +7,7 @@ import yaml
 from db import DB
 import threading
 from stream import Stream
+import tweepy
 
 db = DB()
 
@@ -29,11 +30,11 @@ Can be used in group/channel also.
 Github： https://github.com/gaoyunzhi/twitter_bot
 '''
 
-auth = tweepy.OAuthHandler(CREDENTIALS['twitter_consumer_key'], CREDENTIALS['twitter_consumer_secret'])
-auth.set_access_token(CREDENTIALS['twitter_access_token'], CREDENTIALS['twitter_access_secret'])
+auth = tweepy.OAuthHandler(credential['twitter_consumer_key'], credential['twitter_consumer_secret'])
+auth.set_access_token(credential['twitter_access_token'], credential['twitter_access_secret'])
 twitterApi = tweepy.API(auth)
 
-twitter_stream = Stream(db)
+twitter_stream = Stream(db, twitterApi)
 
 def twitterLoop():
 	try:

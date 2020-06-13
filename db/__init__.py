@@ -39,7 +39,7 @@ def getUserId(text, twitterApi):
 	except:
 		...
 
-def tryRemove(sub_list, text)
+def tryRemove(sub_list, text):
 	try:
 		sub_list.remove(text)
 	except:
@@ -52,7 +52,7 @@ def getSubscriptions(sub):
 			result.add(item)
 	return result
 
-def getChannels(bot, sub, text)
+def getChannels(bot, sub, text):
 	for chat_id in sub:
 		if text in sub.get(chat_id, []):
 			try:
