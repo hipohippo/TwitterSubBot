@@ -39,14 +39,14 @@ class Stream(object):
 			self.user_stream = None
 		if not self.user_stream:
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db))
-			self.user_stream.filter(follow=db.getUsers())
+			self.user_stream.filter(follow=self.db.sub.users())
 
 		if self.key_stream and not self.key_stream.running:
 			self.key_stream.disconnect()
 			self.key_stream = None
 		if not self.key_stream:
 			self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db))
-			self.key_stream.track(follow=db.getKeys()) # need two stream
+			self.key_stream.filter(track=self.db.sub.keys()) # need two stream
 
 	def forceReload(self):
 		# TODO: may need to put this into thread
@@ -59,4 +59,4 @@ class Stream(object):
 		self.reload()
 
 	def reload(self):
-		threading.Thread(target=self.reloadSync).start()
+		threading.Timer(0, self.reloadSync).start()

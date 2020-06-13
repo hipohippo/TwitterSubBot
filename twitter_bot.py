@@ -50,12 +50,12 @@ def handleCommand(update, context):
 		return
 	command, text = splitCommand(msg.text)
 	if 'unsub' in command:
-		db.subscription.remove(msg.chat_id, text, twitterApi)
+		db.sub.remove(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
 	elif 'sub' in command:
-		db.subscription.add(msg.chat_id, text, twitterApi)
+		db.sub.add(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
-	msg.reply_text(db.subscription.get(msg.chat_id, twitterApi), 
+	msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
 
 def handleHelp(update, context):
@@ -66,10 +66,13 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
-	threading.Thread(twitterLoop).start() 
+	print(1)
+	threading.Timer(0, twitterLoop).start() 
+	print(2)
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))
 	dp.add_handler(MessageHandler(Filters.private & Filters.command, handleStart), group=2)
 	tele.start_polling()
+	print(3)
 	tele.idle()

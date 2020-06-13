@@ -120,4 +120,4 @@ class DB(object):
 		self.queue = DBItem('queue')
 		self.blacklist = DBItem('blacklist')
 		self.popularlist = DBItem('popularlist')
-		self.subscription = Subscription()
+		self.sub = Subscription()
