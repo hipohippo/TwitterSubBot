@@ -117,8 +117,6 @@ class Subscription(object):
 	def channelsForUser(self, bot, user_id):
 		return getChannels(bot, self.user_sub, user_id)
 
-	def channelsForKey(self, bot, text):
-		return getChannels(bot, self.key_sub, text)
 
 	def save(self):
 		with open('db/user_sub', 'w') as f:
