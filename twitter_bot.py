@@ -55,8 +55,10 @@ def handleCommand(update, context):
 	command, text = splitCommand(msg.text)
 	if 'unsub' in command:
 		db.subscription.remove(msg.chat_id, text, twitterApi)
+		twitter_stream.forceReload()
 	elif 'sub' in command:
 		db.subscription.add(msg.chat_id, text, twitterApi)
+		twitter_stream.forceReload()
 	msg.reply_text(db.subscription.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
 

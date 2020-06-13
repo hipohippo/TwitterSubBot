@@ -53,5 +53,15 @@ class Stream(object):
 			self.key_stream = tweepy.Stream(auth=twitterApi.auth, listener=KeyUpdateListender(self.db))
 			self.key_stream.track(follow=db.getKeys()) # need two stream
 
+	def forceReload(self):
+		# TODO: may need to put this into thread
+		if self.user_stream:
+			self.user_stream.disconnect()
+			self.user_stream = None
+		if self.key_stream:
+			self.key_stream.disconnect()
+			self.key_stream = None
+		self.reload()
+
 	def reload(self):
 		threading.Thread(target=self.reloadSync).start()
