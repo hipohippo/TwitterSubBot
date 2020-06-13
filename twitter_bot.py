@@ -67,7 +67,7 @@ def handleStart(update, context):
 
 if __name__ == '__main__':
 	twitter_stream.forceReload()
-	threading.Timer(0, twitterLoop).start() 
+	threading.Timer(10 * 60, twitterLoop).start() 
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))

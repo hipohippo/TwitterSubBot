@@ -9,7 +9,7 @@ cache = {}
 def getTid(data):
 	if 'id' in data:
 		return data['id']
-	return data['delete']['id']
+	return data['delete']['status']['id']
 
 
 class UserUpdateListender(tweepy.StreamListener):
