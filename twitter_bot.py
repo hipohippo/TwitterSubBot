@@ -42,6 +42,7 @@ def twitterLoop():
 		db.reload()
 	except Exception as e:
 		debug_group.send_message('twitter_stream reload error ' + str(e))
+	print('twitterLoop')
 	threading.Timer(10 * 60, twitterLoop).start()
 
 @log_on_fail(debug_group)

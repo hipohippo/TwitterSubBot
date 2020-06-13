@@ -48,8 +48,10 @@ def shouldProcess(data, db):
 	bar = 100
 	if matchKey(str(data), db.popularlist.items):
 		bar = 1000
-	print(data)
 	try:
+		data = data['retweeted_status']
+		print(int(data.get('retweet_count')) + int(
+			data.get('favorite_count')))
 		if int(data.get('retweet_count')) + int(
 			data.get('favorite_count')) > bar:
 			return True
