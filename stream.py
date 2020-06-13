@@ -52,10 +52,6 @@ def isRich(data):
 	return 'expanded_url' in str(data)
 
 def shouldProcess(data, db):
-	try:
-		print(data['retweeted_status'])
-	except:
-		...
 	if 'delete' in data:
 		return True
 	if matchKey(str(data), db.blacklist.items):
