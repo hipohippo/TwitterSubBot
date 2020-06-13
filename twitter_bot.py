@@ -53,9 +53,7 @@ def handleCommand(update, context):
 		db.sub.remove(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
 	elif 'sub' in command:
-		print(1)
 		db.sub.add(msg.chat_id, text, twitterApi)
-		print(2)
 		twitter_stream.forceReload()
 	msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
