@@ -17,6 +17,7 @@ class UserUpdateListender(tweepy.StreamListener):
 		self.db = db
 		self.bot = bot
 		super().__init__()
+		print('UserUpdateListender start')
 
 	def on_data(self, data):
 		print(data)
