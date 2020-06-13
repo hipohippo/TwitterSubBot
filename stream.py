@@ -45,9 +45,9 @@ def shouldProcess(data, db):
 		return True
 	if matchKey(str(data), db.blacklist.items):
 		return False
-	bar = 100
+	bar = 1000
 	if matchKey(str(data), db.popularlist.items):
-		bar = 1000
+		bar = 10000
 	try:
 		data = data['retweeted_status']
 		print(int(data.get('retweet_count')) + int(
