@@ -2,8 +2,15 @@ import tweepy
 import threading
 import twitter_2_album
 import yaml
+import album_sender
 
-# it seems steam does not need auth?
+cache = {}
+
+def getTid(data):
+	if 'id' in data:
+		return data['id']
+	return data['delete']['id']
+
 
 class UserUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
@@ -14,12 +21,19 @@ class UserUpdateListender(tweepy.StreamListener):
 	def on_data(self, data):
 		print(data)
 		data = yaml.load(data, Loader=yaml.FullLoader)
-		r = twitter_2_album.get(data['id_str'])
-		for channel in self.db.channelsForUser(self.bot, data['user']['id']):
-			album_sender.send_v2(channel, r)
+		tid = getTid(data)
+		if tid in cache:
+			for r in cache[tid]:
+				r.delete()
+		cache[tid] = []
+		if 'delete' in data:
+			return
+		r = twitter_2_album.get(str(tid))
+		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
+			cache[tid] += album_sender.send_v2(channel, r)
 
 	def on_error(self, status_code):
-		print('on_error = ' + str(status_code))
+		return
 
 class KeyUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
@@ -28,10 +42,10 @@ class KeyUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
-		print(data)
+		...
 
 	def on_error(self, status_code):
-		print('on_error = ' + str(status_code))
+		return
 
 class Stream(object):
 	def __init__(self, db, twitterApi, bot):
@@ -47,15 +61,16 @@ class Stream(object):
 			self.user_stream.disconnect()
 			self.user_stream = None
 		if not self.user_stream:
+			print(4)
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db, self.bot))
 			self.user_stream.filter(follow=self.db.sub.users())
 
-		if self.key_stream and not self.key_stream.running:
-			self.key_stream.disconnect()
-			self.key_stream = None
-		if not self.key_stream:
-			self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db, self.bot))
-			self.key_stream.filter(track=self.db.sub.keys()) # need two stream
+		# if self.key_stream and not self.key_stream.running:
+		# 	self.key_stream.disconnect()
+		# 	self.key_stream = None
+		# if not self.key_stream:
+		# 	self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db, self.bot))
+		# 	self.key_stream.filter(track=self.db.sub.keys()) # need two stream
 
 	def forceReload(self):
 		# TODO: may need to put this into thread
