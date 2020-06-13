@@ -50,7 +50,7 @@ def tryAdd(sub, chat_id, text):
 		sub[chat_id] = []
 	if text in sub[chat_id]:
 		return
-	sub[chat_id].appebd(text)
+	sub[chat_id].append(text)
 
 def getSubscriptions(sub):
 	result = set()
