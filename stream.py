@@ -48,6 +48,13 @@ def getCount(data):
 	except Exception as e:
 		return 0
 
+def isRich(data):
+	try:
+		print(data['retweeted_status'])
+	except:
+		...
+	return 'media_url' in str(data)
+
 def shouldProcess(data, db):
 	if 'delete' in data:
 		return True
