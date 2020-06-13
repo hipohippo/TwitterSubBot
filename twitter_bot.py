@@ -1,16 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import clearUrl, log_on_fail, removeOldFiles, commitRepo, splitCommand
+from telegram_util import log_on_fail, splitCommand
 from telegram.ext import Updater, MessageHandler, Filters
 import yaml
-import album_sender
-from soup_get import SoupGet, Timer
 from db import DB
 import threading
-import weibo_2_album
-import urllib
-from util import shouldSend
 from stream import Stream
 
 db = DB()

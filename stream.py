@@ -1,35 +1,29 @@
 import tweepy
 import threading
 
-class TwitterListener(tweepy.StreamListener):
+# it seems steam does not need auth?
+
+class UserUpdateListender(tweepy.StreamListener):
+	def __init__(self, db):
+		self.db = db
+		super().__init__()
+
 	def on_data(self, data):
-		global record
-		try:
-			tweet_data = json.loads(data)
-			if tweet_data.get('in_reply_to_status_id_str') or not tweet_data.get('user') or \
-				tweet_data.get('quoted_status'):
-				return
-			tuid = tweet_data['user']['id_str']
-			chat_ids = getSubscribers(tuid)
-			if not chat_ids:
-				return
-			content = getContent(tweet_data)
-			url_info = getUrlInfo(tweet_data)
-			key_suffix = getKey(content, url_info)
-			content = tweet_data['user']['name'] + ' | ' + formatContent(content, url_info)
-			for chat_id in chat_ids:
-				key = str(chat_id) + key_suffix
-				r = updater.bot.send_message(chat_id=chat_id, text=content)
-				if key in record:
-					updater.bot.delete_message(chat_id=chat_id, message_id=record[key])
-				record[key] = r['message_id']
-		except Exception as e:
-			print(e)
-			tb.print_exc()
+		print(data)
 
 	def on_error(self, status_code):
 		print('on_error = ' + str(status_code))
-		tb.print_exc()
+
+class KeyUpdateListender(tweepy.StreamListener):
+	def __init__(self, db):
+		self.db = db
+		super().__init__()
+
+	def on_data(self, data):
+		print(data)
+
+	def on_error(self, status_code):
+		print('on_error = ' + str(status_code))
 
 class Stream(object):
 	def __init__(self, db):
