@@ -11,6 +11,7 @@ import threading
 import weibo_2_album
 import urllib
 from util import shouldSend
+from stream import Stream
 
 db = DB()
 
@@ -33,80 +34,17 @@ Can be used in group/channel also.
 Github： https://github.com/gaoyunzhi/twitter_bot
 '''
 
-
-class TwitterListener(tweepy.StreamListener):
-	def on_data(self, data):
-		global record
-		try:
-			tweet_data = json.loads(data)
-			if tweet_data.get('in_reply_to_status_id_str') or not tweet_data.get('user') or \
-				tweet_data.get('quoted_status'):
-				return
-			tuid = tweet_data['user']['id_str']
-			chat_ids = getSubscribers(tuid)
-			if not chat_ids:
-				return
-			content = getContent(tweet_data)
-			url_info = getUrlInfo(tweet_data)
-			key_suffix = getKey(content, url_info)
-			content = tweet_data['user']['name'] + ' | ' + formatContent(content, url_info)
-			for chat_id in chat_ids:
-				key = str(chat_id) + key_suffix
-				r = updater.bot.send_message(chat_id=chat_id, text=content)
-				if key in record:
-					updater.bot.delete_message(chat_id=chat_id, message_id=record[key])
-				record[key] = r['message_id']
-		except Exception as e:
-			print(e)
-			tb.print_exc()
-
-	def on_error(self, status_code):
-		print('on_error = ' + str(status_code))
-		tb.print_exc()
-
-def twitterPush():
-	global twitterStream
-	global twitterApi
-	print('loading/reloading twitter subscription')
-	if twitterStream:
-		twitterStream.disconnect()
-	twitterListener = TwitterListener()
-	twitterStream = tweepy.Stream(auth=twitterApi.auth, listener=twitterListener)
-	twitterStream.filter(follow=db.getUsers())
-	twitterStream.track(follow=db.getKeywords()) # need two stream
-
-def twitterRestart():
-	t = threading.Thread(target=twitterPush)
-	t.start()
-
-def updateSubInfo(msg, bot):
-	try:
-		saveSubscription()
-		twitterRestart()
-		info = 'Twitter Subscription List: \n' +  '\n'.join(sorted(SUBSCRIPTION[str(msg.chat_id)].values()))
-		msg.reply_text(info, quote=False, parse_mode='Markdown', disable_web_page_preview=True)
-	except Exception as e:
-		print(e)
-		tb.print_exc()
-
-def getTwitterUser(link):
-	global twitterApi
-	screenname = [x for x in link.split('/') if x][-1]
-	user = twitterApi.get_user(screenname)
-	return str(user.id), '[' + user.name + '](twitter.com/' + str(user.screen_name) + ')'
-
-
 auth = tweepy.OAuthHandler(CREDENTIALS['twitter_consumer_key'], CREDENTIALS['twitter_consumer_secret'])
 auth.set_access_token(CREDENTIALS['twitter_access_token'], CREDENTIALS['twitter_access_secret'])
 twitterApi = tweepy.API(auth)
 
+twitter_stream = Stream(db)
+
 def twitterLoop():
 	try:
-		if not twitterStream or not twitterStream.running:
-			twitterRestart()
+		twitter_stream.reload()
 	except Exception as e:
-		print(e)
-		tb.print_exc()
+		debug_group.send_message('twitter_stream reload error ' + str(e))
 	threading.Timer(10 * 60, twitterLoop).start()
 
 @log_on_fail(debug_group)
@@ -116,10 +54,11 @@ def handleCommand(update, context):
 		return
 	command, text = splitCommand(msg.text)
 	if 'unsub' in command:
-		db.subscription.remove(msg.chat_id, text)
+		db.subscription.remove(msg.chat_id, text, twitterApi)
 	elif 'sub' in command:
-		db.subscription.add(msg.chat_id, text)
-	msg.reply_text(db.subscription.get(msg.chat_id))
+		db.subscription.add(msg.chat_id, text, twitterApi)
+	msg.reply_text(db.subscription.get(msg.chat_id, twitterApi), 
+		parse_mode='markdown', disable_web_page_preview=True)
 
 def handleHelp(update, context):
 	update.message.reply_text(HELP_MESSAGE)

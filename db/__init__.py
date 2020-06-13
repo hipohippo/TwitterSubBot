@@ -77,7 +77,7 @@ class Subscription(object):
 		self.key_sub[chat_id] = self.key_sub.get(chat_id, []) + [text]
 		self.save()
 
-	def remove(self, chat_id, text):
+	def remove(self, chat_id, text, twitterApi):
 		user_id = getUserId(text, twitterApi)
 		if user_id:
 			tryRemove(self.user_sub.get(chat_id), user_id)
