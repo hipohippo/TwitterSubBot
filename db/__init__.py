@@ -31,16 +31,20 @@ class DBItem(object):
 
 class Subscription(object):
 	def __init__(self):
-		with open('db/subscription') as f:
-			self.sub = yaml.load(f, Loader=yaml.FullLoader)
+		with open('db/user_sub') as f:
+			self.user_sub = yaml.load(f, Loader=yaml.FullLoader)
+		with open('db/keywords_sub') as f:
+			self.keywords_sub = yaml.load(f, Loader=yaml.FullLoader)
 
-	def add(self, chat_id, text):
+	def add(self, chat_id, text, twitterApi):
 		if not text:
 			return
 		try:
-			user_id = text.strip('/').split('/')[-1]
-			int(user_id)
-			text = user_id
+			screenname = text.strip('/').split('/')[-1]
+			user = twitterApi.get_user(screenname)
+			print(user)
+			if user.id:
+				text = user.id
 		except:
 			...
 		self.sub[chat_id] = self.sub.get(chat_id, []) + [text]

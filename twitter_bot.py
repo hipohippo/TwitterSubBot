@@ -12,6 +12,8 @@ import weibo_2_album
 import urllib
 from util import shouldSend
 
+db = DB()
+
 with open('credential') as f:
 	credential = yaml.load(f, Loader=yaml.FullLoader)
 
@@ -114,10 +116,10 @@ def handleCommand(update, context):
 		return
 	command, text = splitCommand(msg.text)
 	if 'unsub' in command:
-		db.remove(msg.chat_id, text)
+		db.subscription.remove(msg.chat_id, text)
 	elif 'sub' in command:
-		db.add(msg.chat_id, text)
-	msg.reply_text(db.get(msg.chat_id))
+		db.subscription.add(msg.chat_id, text)
+	msg.reply_text(db.subscription.get(msg.chat_id))
 
 def handleHelp(update, context):
 	update.message.reply_text(HELP_MESSAGE)
