@@ -29,58 +29,60 @@ class DBItem(object):
 		x = str(x).strip()
 		return x in self.items
 
+def getUserId(text, twitterApi):
+	try:
+		screenname = text.strip('/').split('/')[-1]
+		user = twitterApi.get_user(screenname)
+		return user.id
+	except:
+		...
+
+def tryRemove(sub_list, text)
+	try:
+		sub_list.remove(text)
+	except:
+		...
+
+def getSubscriptions(sub):
+	result = set()
+	for chat_id in sub:
+		for item in sub.get(chat_id, []):
+			result.add(item)
+	return result
+
 class Subscription(object):
 	def __init__(self):
 		with open('db/user_sub') as f:
 			self.user_sub = yaml.load(f, Loader=yaml.FullLoader)
-		with open('db/keywords_sub') as f:
-			self.keywords_sub = yaml.load(f, Loader=yaml.FullLoader)
+		with open('db/key_sub') as f:
+			self.key_sub = yaml.load(f, Loader=yaml.FullLoader)
 
 	def add(self, chat_id, text, twitterApi):
 		if not text:
 			return
-		try:
-			screenname = text.strip('/').split('/')[-1]
-			user = twitterApi.get_user(screenname)
-			print(user)
-			if user.id:
-				text = user.id
-		except:
-			...
-		self.sub[chat_id] = self.sub.get(chat_id, []) + [text]
+		user_id = getUserId(text, twitterApi)
+		if user_id:
+			self.user_sub[chat_id] = self.user_sub.get(chat_id, []) + [user_id]
+			return
+		self.key_sub[chat_id] = self.key_sub.get(chat_id, []) + [text]
 		self.save()
 
 	def remove(self, chat_id, text):
-		self.sub[chat_id] = self.sub.get(chat_id, [])
-		try:
-			self.sub[chat_id].remove(text)
-		except:
-			...
+		user_id = getUserId(text, twitterApi)
+		if user_id:
+			tryRemove(self.user_sub.get(chat_id), user_id)
+		else:
+			tryRemove(self.key_sub.get(chat_id), text)
 
 	def get(self, chat_id):
 		return '当前订阅：' + ' '.join(self.sub.get(chat_id, []))
 
-	def subscriptions(self):
-		result = set()
-		for chat_id in self.sub:
-			for item in self.sub.get(chat_id, []):
-				result.add(item)
-		return result
 
 	def keywords(self):
-		for item in self.subscriptions():
-			try:
-				int(item)
-			except:
-				yield item
+		getSubscriptions(self.key_sub)
 
 	def users(self):
-		for item in self.subscriptions():
-			try:
-				int(item)
-				yield item
-			except:
-				...
+		getSubscriptions(self.user_sub)
 
 	def channels(self, bot, text):
 		for chat_id in self.sub:
