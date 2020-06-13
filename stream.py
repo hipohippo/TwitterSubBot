@@ -58,8 +58,6 @@ def shouldProcess(data, db):
 		bar *= 10
 	return getCount(data) > bar
 
-# dedup
-
 class KeyUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
 		self.db = db
