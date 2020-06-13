@@ -73,8 +73,8 @@ class Subscription(object):
 		user_id = getUserId(text, twitterApi)
 		if user_id:
 			self.user_sub[chat_id] = self.user_sub.get(chat_id, []) + [user_id]
-			return
-		self.key_sub[chat_id] = self.key_sub.get(chat_id, []) + [text]
+		else:
+			self.key_sub[chat_id] = self.key_sub.get(chat_id, []) + [text]
 		self.save()
 
 	def remove(self, chat_id, text, twitterApi):
@@ -83,6 +83,7 @@ class Subscription(object):
 			tryRemove(self.user_sub.get(chat_id), user_id)
 		else:
 			tryRemove(self.key_sub.get(chat_id), text)
+		self.save()
 
 	def get(self, chat_id, twitterApi):
 		result = []

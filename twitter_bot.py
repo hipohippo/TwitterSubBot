@@ -53,7 +53,9 @@ def handleCommand(update, context):
 		db.sub.remove(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
 	elif 'sub' in command:
+		print(1)
 		db.sub.add(msg.chat_id, text, twitterApi)
+		print(2)
 		twitter_stream.forceReload()
 	msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
@@ -66,13 +68,10 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
-	print(1)
 	threading.Timer(0, twitterLoop).start() 
-	print(2)
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))
 	dp.add_handler(MessageHandler(Filters.private & Filters.command, handleStart), group=2)
 	tele.start_polling()
-	print(3)
 	tele.idle()
