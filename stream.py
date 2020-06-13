@@ -40,24 +40,25 @@ class UserUpdateListender(tweepy.StreamListener):
 	def on_error(self, status_code):
 		return
 
+def getCount(data):
+	try:
+		data = data['retweeted_status']
+		return int(data.get('retweet_count')) + int(
+			data.get('favorite_count'))
+	except Exception as e:
+		return 0
+
 def shouldProcess(data, db):
 	if 'delete' in data:
 		return True
 	if matchKey(str(data), db.blacklist.items):
 		return False
-	bar = 1000
+	bar = 10000
 	if matchKey(str(data), db.popularlist.items):
-		bar = 10000
-	try:
-		data = data['retweeted_status']
-		print(int(data.get('retweet_count')) + int(
-			data.get('favorite_count')))
-		if int(data.get('retweet_count')) + int(
-			data.get('favorite_count')) > bar:
-			return True
-	except Exception as e:
-		print(e)
-		return False
+		bar *= 100
+	if matchKey(str(data), ['media_url']):
+		bar /= 10
+	return getCount(data) > bar
 
 class KeyUpdateListender(tweepy.StreamListener):
 	def __init__(self, db, bot):
