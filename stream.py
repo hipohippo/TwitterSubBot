@@ -4,10 +4,6 @@ import threading
 # it seems steam does not need auth?
 
 class UserUpdateListender(tweepy.StreamListener):
-	def __init__(self, db):
-		self.db = db
-		super().__init__()
-
 	def on_data(self, data):
 		print(data)
 
@@ -15,10 +11,6 @@ class UserUpdateListender(tweepy.StreamListener):
 		print('on_error = ' + str(status_code))
 
 class KeyUpdateListender(tweepy.StreamListener):
-	def __init__(self, db):
-		self.db = db
-		super().__init__()
-
 	def on_data(self, data):
 		print(data)
 
@@ -39,6 +31,7 @@ class Stream(object):
 			self.user_stream = None
 		if not self.user_stream:
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db))
+			print(self.db.sub.users())
 			self.user_stream.filter(follow=self.db.sub.users())
 
 		if self.key_stream and not self.key_stream.running:
