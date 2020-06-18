@@ -30,6 +30,7 @@ class UserUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		print('on user data')
 		data = yaml.load(data, Loader=yaml.FullLoader)
 		tid, r = getAlbum(data)
 		if not r:
@@ -70,6 +71,7 @@ class KeyUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
+		print('on key data')
 		data = yaml.load(data, Loader=yaml.FullLoader)
 		if not shouldProcess(data, self.db):
 			return
@@ -100,6 +102,7 @@ class Stream(object):
 		self.reload()
 
 	def reloadSync(self):
+		print('reloadSync start')
 		if self.user_stream and not self.user_stream.running:
 			self.user_stream.disconnect()
 			self.user_stream = None
@@ -113,6 +116,7 @@ class Stream(object):
 		if not self.key_stream:
 			self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db, self.bot))
 			self.key_stream.filter(track=self.db.sub.keys()) # need two stream
+		print('reloadSync end')
 
 	def forceReload(self):
 		if self.user_stream:
