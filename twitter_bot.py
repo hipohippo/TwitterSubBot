@@ -75,4 +75,4 @@ if __name__ == '__main__':
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))
 	dp.add_handler(MessageHandler(Filters.private & Filters.command, handleStart), group=2)
 	tele.start_polling()
-	tele.idle()
+# 	tele.idle()
