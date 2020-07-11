@@ -59,7 +59,7 @@ def shouldProcess(data, db):
 		return True
 	if matchKey(str(data), db.blacklist.items):
 		return False
-	bar = 1000
+	bar = 10000
 	if matchKey(str(data), db.popularlist.items):
 		bar *= 10
 	if isRich(data):
