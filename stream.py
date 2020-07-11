@@ -64,34 +64,6 @@ def shouldProcess(data, db):
 		bar /= 10
 	return getCount(data) > bar
 
-class KeyUpdateListender(tweepy.StreamListener):
-	def __init__(self, db, bot):
-		self.db = db
-		self.bot = bot
-		super().__init__()
-
-	def on_data(self, data):
-		print('on key data')
-		data = yaml.load(data, Loader=yaml.FullLoader)
-		if not shouldProcess(data, self.db):
-			return
-		if not self.db.existing.add(data['retweeted_status']['id']):
-			return
-		tid, r = getAlbum(data)
-		if not r:
-			return
-		for chat_id in self.db.sub.key_sub:
-			try:
-				channel = self.bot.get_chat(chat_id)
-			except:
-				continue
-			if matchKey(r.cap, self.db.sub.key_sub.get(chat_id, [])):
-				cache[tid] += album_sender.send_v2(channel, r)
-				time.sleep(10)
-
-	def on_error(self, status_code):
-		return
-
 class Stream(object):
 	def __init__(self, db, twitterApi, bot):
 		self.db = db
@@ -109,22 +81,12 @@ class Stream(object):
 		if not self.user_stream:
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db, self.bot))
 			self.user_stream.filter(follow=self.db.sub.users())
-
-		if self.key_stream and not self.key_stream.running:
-			self.key_stream.disconnect()
-			self.key_stream = None
-		if not self.key_stream:
-			self.key_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=KeyUpdateListender(self.db, self.bot))
-			self.key_stream.filter(track=self.db.sub.keys()) # need two stream
 		print('reloadSync end')
 
 	def forceReload(self):
 		if self.user_stream:
 			self.user_stream.disconnect()
 			self.user_stream = None
-		if self.key_stream:
-			self.key_stream.disconnect()
-			self.key_stream = None
 		self.reload()
 
 	def reload(self):
