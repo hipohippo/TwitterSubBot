@@ -45,20 +45,20 @@ def getRetweetedId(status):
 def searchKeys():
 	for key in list(db.sub.keys()):
 		for status in twitterApi.search(key):
-			if 'id' not status._json or not shouldProcess(status._json, db):
+			if 'id' not in status._json or not shouldProcess(status._json, db):
 				continue
-			if not self.db.existing.add(status.id):
+			if not db.existing.add(status.id):
 				continue
 			rid = getRetweetedId(status)
-			if rid and not self.db.existing.add(rid):
+			if rid and not db.existing.add(rid):
 				continue
 			album = twitter_2_album.get(str(status.id))
-			for chat_id in self.db.sub.key_sub.copy():
-				if (key not in self.db.sub.key_sub[chat_id] and 
-					not matchKey(r.cap, self.db.sub.key_sub[chat_id])):
+			for chat_id in db.sub.key_sub.copy():
+				if (key not in db.sub.key_sub[chat_id] and 
+					not matchKey(r.cap, db.sub.key_sub[chat_id])):
 					continue
 				try:	
-					channel = self.bot.get_chat(chat_id)	
+					channel = tele.bot.get_chat(chat_id)	
 					album_sender.send_v2(channel, album)
 				except Exception as e:
 					print(chat_id, str(e))	
