@@ -38,7 +38,7 @@ twitter_stream = Stream(db, twitterApi, tele.bot)
 
 @log_on_fail(debug_group)
 def searchKeys():
-	
+	...
 
 def twitterLoop():
 	try:
