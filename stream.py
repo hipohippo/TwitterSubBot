@@ -45,7 +45,9 @@ def getCount(data):
 	try:
 		data = data['retweeted_status']
 		return int(data.get('retweet_count')) + int(
-			data.get('favorite_count'))
+			data.get('favorite_count') + 
+			int(data.get('retweet_count', 0)) +
+			int(data.get('favorite_count', 0)))
 	except Exception as e:
 		return 0
 
@@ -57,7 +59,7 @@ def shouldProcess(data, db):
 		return True
 	if matchKey(str(data), db.blacklist.items):
 		return False
-	bar = 1000000
+	bar = 1000
 	if matchKey(str(data), db.popularlist.items):
 		bar *= 10
 	if isRich(data):

@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import log_on_fail, splitCommand
+from telegram_util import log_on_fail, splitCommand, matchKey
 from telegram.ext import Updater, MessageHandler, Filters
 import yaml
 from db import DB
 import threading
-from stream import Stream
+from stream import Stream, shouldProcess
 import tweepy
+import twitter_2_album
+import album_sender
 
 db = DB()
 
@@ -36,9 +38,31 @@ twitterApi = tweepy.API(auth)
 
 twitter_stream = Stream(db, twitterApi, tele.bot)
 
+def getRetweetedId(status):
+	return status._json.get('retweeted_status', {}).get('id')
+
 @log_on_fail(debug_group)
 def searchKeys():
-	...
+	for key in list(db.sub.keys()):
+		for status in twitterApi.search(key):
+			if 'id' not status._json or not shouldProcess(status._json, db):
+				continue
+			if not self.db.existing.add(status.id):
+				continue
+			rid = getRetweetedId(status)
+			if rid and not self.db.existing.add(rid):
+				continue
+			album = twitter_2_album.get(str(status.id))
+			for chat_id in self.db.sub.key_sub.copy():
+				if (key not in self.db.sub.key_sub[chat_id] and 
+					not matchKey(r.cap, self.db.sub.key_sub[chat_id])):
+					continue
+				try:	
+					channel = self.bot.get_chat(chat_id)	
+					album_sender.send_v2(channel, album)
+				except Exception as e:
+					print(chat_id, str(e))	
+					continue
 
 def twitterLoop():
 	try:
@@ -73,6 +97,7 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
+	searchKeys()
 	twitter_stream.forceReload()
 	threading.Timer(10 * 60, twitterLoop).start() 
 	dp = tele.dispatcher
