@@ -36,12 +36,17 @@ twitterApi = tweepy.API(auth)
 
 twitter_stream = Stream(db, twitterApi, tele.bot)
 
+@log_on_fail(debug_group)
+def searchKeys():
+	
+
 def twitterLoop():
 	try:
 		twitter_stream.reload()
 		db.reload()
 	except Exception as e:
 		debug_group.send_message('twitter_stream reload error ' + str(e))
+	searchKeys()
 	print('twitterLoop')
 	threading.Timer(10 * 60, twitterLoop).start()
 
