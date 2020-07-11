@@ -55,7 +55,7 @@ def searchKeys():
 			album = twitter_2_album.get(str(status.id))
 			for chat_id in db.sub.key_sub.copy():
 				if (key not in db.sub.key_sub[chat_id] and 
-					not matchKey(r.cap, db.sub.key_sub[chat_id])):
+					not matchKey(album.cap, db.sub.key_sub[chat_id])):
 					continue
 				try:	
 					channel = tele.bot.get_chat(chat_id)	
