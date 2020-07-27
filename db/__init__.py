@@ -20,7 +20,6 @@ class DBItem(object):
 		self.items.add(x)
 		with open(self.fn, 'a') as f:
 			f.write('\n' + x)
-		commitRepo(delay_minute=0)
 		return True
 
 	def remove(self, x):
@@ -30,7 +29,6 @@ class DBItem(object):
 			pass
 		with open(self.fn, 'w') as f:
 			f.write('\n'.join(self.items))
-		commitRepo(delay_minute=0)
 
 def getUserId(text, twitterApi):
 	try:
