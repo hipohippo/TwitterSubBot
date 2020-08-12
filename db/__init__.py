@@ -128,7 +128,7 @@ class DB(object):
 		self.reload()
 
 	def reload(self):
-		self.blacklist = DBItem('blacklist')
+		self.blocklist = DBItem('blocklist')
 		self.popularlist = DBItem('popularlist')
 		self.existing = DBItem('existing')
 		self.sub = Subscription()

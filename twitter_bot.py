@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import log_on_fail, splitCommand, matchKey
+from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo
 from telegram.ext import Updater, MessageHandler, Filters
 import yaml
 from db import DB
@@ -74,20 +74,44 @@ def twitterLoop():
 	print('twitterLoop')
 	threading.Timer(10 * 60, twitterLoop).start()
 
+def handleAdmin(command, text):
+	if not text:
+		return
+	success = False
+	if command == '/abl':
+		db.bocklist.add(text)
+		success = True
+	if command == '/apl':
+		db.popularlist.add(text)
+		success = True
+	if success:
+		autoDestroy(msg.reply_text('success'), 0.1)
+		tryDelete(msg)
+		commitRepo(delay_minute=0)
+
 @log_on_fail(debug_group)
 def handleCommand(update, context):
 	msg = update.effective_message
+	command, text = splitCommand(msg.text)
+	if msg.chat.username in ['b4cxb', 'weibo_read', 'weibo_one']:
+		handleAdmin(command, text)
 	if not msg or not msg.text.startswith('/tw'):
 		return
-	command, text = splitCommand(msg.text)
+	success = False
 	if 'unsub' in command:
 		db.sub.remove(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
+		success = True
 	elif 'sub' in command:
 		db.sub.add(msg.chat_id, text, twitterApi)
 		twitter_stream.forceReload()
-	msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
+		success = True
+	r = msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
+	if msg.chat_id < 0:
+		tryDelete(msg)
+		if success:
+			autoDestroy(r, 0.1)
 
 def handleHelp(update, context):
 	update.message.reply_text(HELP_MESSAGE)
