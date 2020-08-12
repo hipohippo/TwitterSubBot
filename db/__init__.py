@@ -62,7 +62,8 @@ def getChannels(bot, sub, text):
 	for chat_id in sub:
 		if text in sub.get(chat_id, []):
 			try:
-				yield bot.get_chat(chat_id)
+				channel = bot.get_chat(chat_id)
+				yield channel
 			except:
 				...
 

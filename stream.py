@@ -30,13 +30,15 @@ class UserUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
-		print('on user data')
 		data = yaml.load(data, Loader=yaml.FullLoader)
 		tid, r = getAlbum(data)
 		if not r:
 			return
 		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
-			cache[tid] += album_sender.send_v2(channel, r)
+			try:
+				cache[tid] += album_sender.send_v2(channel, r)
+			except:
+				...
 
 	def on_error(self, status_code):
 		return
@@ -76,14 +78,12 @@ class Stream(object):
 		self.reload()
 
 	def reloadSync(self):
-		print('reloadSync start')
 		if self.user_stream and not self.user_stream.running:
 			self.user_stream.disconnect()
 			self.user_stream = None
 		if not self.user_stream:
 			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db, self.bot))
 			self.user_stream.filter(follow=self.db.sub.users())
-		print('reloadSync end')
 
 	def forceReload(self):
 		if self.user_stream:
