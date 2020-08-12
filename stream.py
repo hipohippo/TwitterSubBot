@@ -37,8 +37,8 @@ class UserUpdateListender(tweepy.StreamListener):
 		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
 			try:
 				cache[tid] += album_sender.send_v2(channel, r)
-			except:
-				...
+			except Exception as e:
+				print('send fail for user', channel.id, str(e))
 
 	def on_error(self, status_code):
 		return

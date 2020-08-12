@@ -61,7 +61,7 @@ def searchKeys():
 					channel = tele.bot.get_chat(chat_id)	
 					album_sender.send_v2(channel, album)
 				except Exception as e:
-					print(chat_id, str(e))	
+					print('send fail for key', chat_id, str(e))	
 					continue
 
 def twitterLoop():
