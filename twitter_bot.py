@@ -74,7 +74,7 @@ def twitterLoop():
 	print('twitterLoop')
 	threading.Timer(10 * 60, twitterLoop).start()
 
-def handleAdmin(command, text):
+def handleAdmin(msg, command, text):
 	if not text:
 		return
 	success = False
@@ -94,7 +94,7 @@ def handleCommand(update, context):
 	msg = update.effective_message
 	command, text = splitCommand(msg.text)
 	if msg.chat.username in ['b4cxb', 'twitter_read']:
-		handleAdmin(command, text)
+		handleAdmin(msg, command, text)
 	if not msg or not msg.text.startswith('/tw'):
 		return
 	success = False
