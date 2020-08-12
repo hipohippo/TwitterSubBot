@@ -79,7 +79,7 @@ def handleAdmin(command, text):
 		return
 	success = False
 	if command == '/abl':
-		db.bocklist.add(text)
+		db.blocklist.add(text)
 		success = True
 	if command == '/apl':
 		db.popularlist.add(text)
