@@ -93,7 +93,7 @@ def handleAdmin(command, text):
 def handleCommand(update, context):
 	msg = update.effective_message
 	command, text = splitCommand(msg.text)
-	if msg.chat.username in ['b4cxb', 'weibo_read', 'weibo_one']:
+	if msg.chat.username in ['b4cxb', 'twitter_read']:
 		handleAdmin(command, text)
 	if not msg or not msg.text.startswith('/tw'):
 		return
