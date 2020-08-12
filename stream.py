@@ -59,7 +59,7 @@ def isRich(data):
 def shouldProcess(data, db):
 	if 'delete' in data:
 		return True
-	if matchKey(str(data), db.blacklist.items):
+	if matchKey(str(data), db.blocklist.items):
 		return False
 	bar = 1000000
 	if matchKey(str(data), db.popularlist.items):
