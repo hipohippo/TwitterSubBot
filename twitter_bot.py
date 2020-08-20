@@ -6,34 +6,42 @@ from telegram.ext import MessageHandler, Filters
 import threading
 import twitter_2_album
 import album_sender
-from .db import popularlist, blocklist, existing, subscription
-from .common import tele, debug_group, twitterApi
+from db import blocklist, existing, subscription
+from common import tele, debug_group, twitterApi
+from util import getHash, passFilter
 
-def getRetweetedId(status):
-	return status._json.get('retweeted_status', {}).get('id')
+processed_channels = set()
+
+def getStatuses(key):
+	if isinstance(key, int):
+		return twitterApi.user_timeline(key)
+	return twitterApi.search(key, result_type='popular')
+
+def shouldProcess(channel, status, key):
+	if channel.id in processed_channels:
+		return False
+	if not passFilter(channel, status, key):
+		return False
+	thash = getHash(status) + str(channel.id)
+	if not existing.add(thash):
+		return False
+	processed_channels.add(channel.id)
+	return True
 
 @log_on_fail(debug_group)
 def loopImp():
-	for key in list(subscription.keys()):
-		for status in twitterApi.search(key, result_type='popular'):
-			if 'id' not in status._json or not shouldProcess(status._json, db):
-				continue
-			if not db.existing.add(status.id):
-				continue
-			rid = getRetweetedId(status)
-			if rid and not db.existing.add(rid):
-				continue
-			album = twitter_2_album.get(str(status.id))
-			for chat_id in subscription.key_sub.copy():
-				if (key not in subscription.key_sub[chat_id] and 
-					not matchKey(album.cap, subscription.key_sub[chat_id])):
-					continue
-				try:	
-					channel = tele.bot.get_chat(chat_id)	
-					album_sender.send_v2(channel, album)
-				except Exception as e:
-					print('send fail for key', chat_id, str(e))	
-					continue
+	global processed_channels 
+	processed_channels = set()
+	channels = list(subscription.getChannels())
+	for key in subscription.keys():
+		for status in getStatuses(key):
+			for channel in channels:
+				if shouldProcess(channel, status, key):
+					try:
+						album = twitter_2_album.get(str(status.id))
+						album_sender.send_v2(channel, album)
+					except Exception as e:
+						print('send fail', channel.id, str(e), status.id)	
 
 def twitterLoop():
 	loopImp()
@@ -45,9 +53,6 @@ def handleAdmin(msg, command, text):
 	success = False
 	if command == '/abl':
 		blocklist.add(text)
-		success = True
-	if command == '/apl':
-		popularlist.add(text)
 		success = True
 	if success:
 		autoDestroy(msg.reply_text('success'), 0.1)

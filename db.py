@@ -60,13 +60,24 @@ class Subscription(object):
 				result.append(text)
 		return 'subscriptions: ' + ' '.join(result)
 
-	def getChats(self, text):
+	def getChannels(self):
 		for chat_id in self._db:
-			if text in self._db[chat_id]: # verified, this works
-				try:
-					yield bot.get_chat(chat_id)
-				except:
-					...
+			try:
+				yield bot.get_chat(chat_id) # verified, this works
+			except:
+				...
+
+	def keys(self):
+		result = set()
+		for chat_id in self._db:
+			result.update(self._db[chat_id])
+		for key in list(result):
+			if matchKey(key, ['filter']):
+				result.remove(key)
+		return result
+
+	def hasMasterFilter(self, chat_id):
+		return 'hasMasterFilter' in self._db[chat_id]
 
 	def save(self):
 		with open('db/subscription', 'w') as f:
@@ -82,6 +93,5 @@ def hasPermission(chat_id):
 		return False
 	
 blocklist = plain_db.loadKeyOnlyDB('blocklist')
-popularlist = plain_db.loadKeyOnlyDB('popularlist')
 existing = plain_db.loadKeyOnlyDB('existing')
 subscription = Subscription()
