@@ -126,8 +126,8 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
-	searchKeys()
 	twitter_stream.forceReload()
+	searchKeys()
 	threading.Timer(10 * 60, twitterLoop).start() 
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))

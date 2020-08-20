@@ -31,11 +31,7 @@ class UserUpdateListender(tweepy.StreamListener):
 
 	def on_data(self, data):
 		data = yaml.load(data, Loader=yaml.FullLoader)
-		time.sleep(5)
-		try:
-			tid, r = getAlbum(data)
-		except:
-			return
+		tid, r = getAlbum(data)
 		if not r:
 			return
 		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
@@ -64,7 +60,7 @@ def shouldProcess(data, db):
 		return True
 	if matchKey(str(data), db.blocklist.items):
 		return False
-	bar = 1000000
+	bar = 10000
 	if matchKey(str(data), db.popularlist.items):
 		bar *= 10
 	if isRich(data):
