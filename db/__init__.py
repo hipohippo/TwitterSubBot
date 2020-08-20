@@ -1,34 +1,7 @@
 import os
 import yaml
 from telegram_util import commitRepo
-
-def getFile(name):
-	fn = 'db/' + name
-	os.system('touch ' + fn)
-	with open(fn) as f:
-		return set([x.strip() for x in f.readlines() if x.strip()])
-
-class DBItem(object):
-	def __init__(self, name):
-		self.items = getFile(name)
-		self.fn = 'db/' + name
-
-	def add(self, x):
-		x = str(x).strip()
-		if not x or x in self.items:
-			return False
-		self.items.add(x)
-		with open(self.fn, 'a') as f:
-			f.write('\n' + x)
-		return True
-
-	def remove(self, x):
-		try:
-			self.items.remove(x)
-		except:
-			pass
-		with open(self.fn, 'w') as f:
-			f.write('\n'.join(self.items))
+import plain_db
 
 def getUserId(text, twitterApi):
 	try:
@@ -129,7 +102,7 @@ class DB(object):
 		self.reload()
 
 	def reload(self):
-		self.blocklist = DBItem('blocklist')
-		self.popularlist = DBItem('popularlist')
-		self.existing = DBItem('existing')
+		self.blocklist = plain_db.loadKeyOnlyDB('blocklist')
+		self.popularlist = plain_db.loadKeyOnlyDB('popularlist')
+		self.existing = plain_db.loadKeyOnlyDB('existing')
 		self.sub = Subscription()

@@ -75,29 +75,3 @@ def shouldProcess(data, db):
 	if isRich(data):
 		bar /= 10
 	return getCount(data) > bar
-
-class Stream(object):
-	def __init__(self, db, twitterApi, bot):
-		self.db = db
-		self.user_stream = None
-		self.key_stream = None
-		self.twitterApi = twitterApi
-		self.bot = bot
-		self.reload()
-
-	def reloadSync(self):
-		if self.user_stream and not self.user_stream.running:
-			self.user_stream.disconnect()
-			self.user_stream = None
-		if not self.user_stream:
-			self.user_stream = tweepy.Stream(auth=self.twitterApi.auth, listener=UserUpdateListender(self.db, self.bot))
-			self.user_stream.filter(follow=self.db.sub.users())
-
-	def forceReload(self):
-		if self.user_stream:
-			self.user_stream.disconnect()
-			self.user_stream = None
-		self.reload()
-
-	def reload(self):
-		threading.Timer(0, self.reloadSync).start()
