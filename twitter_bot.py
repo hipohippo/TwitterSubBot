@@ -45,15 +45,11 @@ def getRetweetedId(status):
 @log_on_fail(debug_group)
 def searchKeys():
 	for key in list(db.sub.keys()):
-		time.sleep(5)
 		for status in twitterApi.search(key, result_type='popular'):
-			print(1)
 			if 'id' not in status._json or not shouldProcess(status._json, db):
 				continue
-			print(2)
 			if not db.existing.add(status.id):
 				continue
-			print(3)
 			rid = getRetweetedId(status)
 			if rid and not db.existing.add(rid):
 				continue

@@ -65,7 +65,6 @@ def shouldProcess(data, db):
 		bar *= 10
 	if isRich(data):
 		bar /= 10
-	print('getCount(data)', getCount(data))
 	return getCount(data) > bar
 
 class Stream(object):
