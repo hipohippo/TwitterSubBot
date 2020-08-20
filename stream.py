@@ -31,7 +31,11 @@ class UserUpdateListender(tweepy.StreamListener):
 
 	def on_data(self, data):
 		data = yaml.load(data, Loader=yaml.FullLoader)
-		tid, r = getAlbum(data)
+		time.sleep(5)
+		try:
+			tid, r = getAlbum(data)
+		except:
+			return
 		if not r:
 			return
 		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
