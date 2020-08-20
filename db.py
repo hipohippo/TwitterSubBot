@@ -83,14 +83,6 @@ class Subscription(object):
 		with open('db/subscription', 'w') as f:
 			f.write(yaml.dump(self._db, sort_keys=True, indent=2, allow_unicode=True))
 		commitRepo(delay_minute=0)
-
-def hasPermission(chat_id):
-	try:
-		r = bot.send_message(chat_id, 'test')
-		r.delete()
-		return True
-	except:
-		return False
 	
 blocklist = plain_db.loadKeyOnlyDB('blocklist')
 existing = plain_db.loadKeyOnlyDB('existing')
