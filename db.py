@@ -71,7 +71,7 @@ class Subscription(object):
 	def save(self):
 		with open('db/subscription', 'w') as f:
 			f.write(yaml.dump(self._db, sort_keys=True, indent=2, allow_unicode=True))
-		# commitRepo(delay_minute=0) # testing
+		commitRepo(delay_minute=0)
 
 def hasPermission(chat_id):
 	try:

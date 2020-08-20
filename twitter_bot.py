@@ -14,7 +14,7 @@ def getRetweetedId(status):
 
 @log_on_fail(debug_group)
 def loopImp():
-	for key in list(db.sub.keys()):
+	for key in list(subscription.keys()):
 		for status in twitterApi.search(key, result_type='popular'):
 			if 'id' not in status._json or not shouldProcess(status._json, db):
 				continue
@@ -24,9 +24,9 @@ def loopImp():
 			if rid and not db.existing.add(rid):
 				continue
 			album = twitter_2_album.get(str(status.id))
-			for chat_id in db.sub.key_sub.copy():
-				if (key not in db.sub.key_sub[chat_id] and 
-					not matchKey(album.cap, db.sub.key_sub[chat_id])):
+			for chat_id in subscription.key_sub.copy():
+				if (key not in subscription.key_sub[chat_id] and 
+					not matchKey(album.cap, subscription.key_sub[chat_id])):
 					continue
 				try:	
 					channel = tele.bot.get_chat(chat_id)	
@@ -64,12 +64,12 @@ def handleCommand(update, context):
 		return
 	success = False
 	if 'unsub' in command:
-		db.sub.remove(msg.chat_id, text, twitterApi)
+		subscription.remove(msg.chat_id, text)
 		success = True
 	elif 'sub' in command:
-		db.sub.add(msg.chat_id, text, twitterApi)
+		subscription.add(msg.chat_id, text)
 		success = True
-	r = msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
+	r = msg.reply_text(subscription.getSubcription(msg.chat_id), 
 		parse_mode='markdown', disable_web_page_preview=True)
 	if msg.chat_id < 0:
 		tryDelete(msg)
