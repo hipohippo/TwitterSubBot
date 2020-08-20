@@ -3,8 +3,8 @@ from db import blocklist, subscription
 
 def getHash(status):
 	retweeted_id = status._json.get('retweeted_status', {}).get('id')
-	if retweeted:
-		return retweeted
+	if retweeted_id:
+		return retweeted_id
 	return status.id
 
 def getCountInner(data):
@@ -29,15 +29,8 @@ def passMasterFilter(data):
 		return False
 	return True
 
-def tooOld(data): # for migration purpose
-	return data.get('timestamp_ms', 0) < 1597521833000
-
 def passFilter(channel, status, key):
 	data = status._json
-	print(1)
-	if tooOld(data): # for hash migration
-		return False
-	print('here')
 	chat_id = channel.id
 	if key not in subscription._db.get(chat_id, []):
 		return False
