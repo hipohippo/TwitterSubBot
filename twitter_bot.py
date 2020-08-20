@@ -56,6 +56,7 @@ def loopImp():
 		for status in status_cache[key]: # getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
+					print(2)
 					try:
 						if channel.username == 'twitter_read':
 							print(key, status.id)
