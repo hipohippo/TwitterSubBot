@@ -87,7 +87,7 @@ def batchAdd(old_dict):
 			continue
 		items = old_dict.get(chat_id)
 		for item in items:
-			subscription.add(chat_id, item)
+			subscription.add(chat_id, str(item))
 
 def migrate():
 	with open('db/user_sub') as f:
