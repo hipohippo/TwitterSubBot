@@ -38,6 +38,7 @@ def loopImp():
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
+						print(channel.username, key, status.id)
 						album = twitter_2_album.get(str(status.id))
 						album_sender.send_v2(channel, album)
 					except Exception as e:
