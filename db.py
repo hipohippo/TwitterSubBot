@@ -80,22 +80,6 @@ def hasPermission(chat_id):
 		return True
 	except:
 		return False
-
-def batchAdd(old_dict):
-	for chat_id in old_dict:
-		if not hasPermission(chat_id):
-			continue
-		items = old_dict.get(chat_id)
-		for item in items:
-			subscription.add(chat_id, str(item))
-
-def migrate():
-	with open('db/user_sub') as f:
-		user_sub = yaml.load(f, Loader=yaml.FullLoader)
-	with open('db/key_sub') as f:
-		key_sub = yaml.load(f, Loader=yaml.FullLoader)
-	batchAdd(key_sub)
-	batchAdd(user_sub)
 	
 blocklist = plain_db.loadKeyOnlyDB('blocklist')
 popularlist = plain_db.loadKeyOnlyDB('popularlist')
