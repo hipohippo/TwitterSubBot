@@ -50,7 +50,7 @@ def loopImp():
 
 def twitterLoop():
 	loopImp()
-	threading.Timer(10 * 60, twitterLoop).start()
+	threading.Timer(10, twitterLoop).start() # testing 10 * 60
 
 def handleAdmin(msg, command, text):
 	if not text:

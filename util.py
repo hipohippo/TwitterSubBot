@@ -19,11 +19,10 @@ def getCountInner(data):
 def getCount(data):
 	count = (getCountInner(data.get('retweeted_status', {})) / 3 + 
 		getCountInner(data))
-	print('count', count)
 	return count
 
 def passKeyFilter(data):
-	return getCount(data) > 100000
+	return getCount(data) > 10000
 
 def passMasterFilter(data):
 	if matchKey(str(data), blocklist.items()):
