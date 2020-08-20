@@ -47,7 +47,8 @@ def loopImp():
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
-						print(channel.username, key, status.id)
+						if channel.username == 'twitter_read':
+							print(key, status._json.get('in_reply_to_status_id'), status.id)
 						album = twitter_2_album.get(str(status.id))
 						album_sender.send_v2(channel, album)
 					except Exception as e:
@@ -55,7 +56,7 @@ def loopImp():
 
 def twitterLoop():
 	loopImp()
-	threading.Timer(10, twitterLoop).start() # testing 10 * 60
+	threading.Timer(1, twitterLoop).start() # testing 10 * 60
 
 def handleAdmin(msg, command, text):
 	if not text:
