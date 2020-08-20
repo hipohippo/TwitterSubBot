@@ -26,7 +26,7 @@ def shouldProcess(channel, status, key):
 		return False
 	if not passFilter(channel, status, key):
 		return False
-	thash = getHash(status) + str(channel.id)
+	thash = str(getHash(status)) + str(channel.id)
 	if not existing.add(thash):
 		return False
 	processed_channels.add(channel.id)
