@@ -25,7 +25,7 @@ def passKeyFilter(data):
 	return getCount(data) > 100000
 
 def passMasterFilter(data):
-	if matchKey(str(data), blocklist.items):
+	if matchKey(str(data), blocklist.items()):
 		return False
 	return True
 
