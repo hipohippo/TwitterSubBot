@@ -3,24 +3,11 @@
 
 from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo
 from telegram.ext import Updater, MessageHandler, Filters
-import yaml
-from db import DB
 import threading
-import tweepy
 import twitter_2_album
 import album_sender
-
-db = DB()
-
-with open('CREDENTIALS') as f:
-	credential = yaml.load(f, Loader=yaml.FullLoader)
-
-tele = Updater(credential['bot'], use_context=True)  # @twitter_send_bot
-debug_group = tele.bot.get_chat(420074357)
-
-auth = tweepy.OAuthHandler(credential['twitter_consumer_key'], credential['twitter_consumer_secret'])
-auth.set_access_token(credential['twitter_access_token'], credential['twitter_access_secret'])
-twitterApi = tweepy.API(auth)
+from .db import popularlist, blocklist, existing, subscription
+from .common import tele, debug_group, twitterApi
 
 def getRetweetedId(status):
 	return status._json.get('retweeted_status', {}).get('id')
@@ -57,10 +44,10 @@ def handleAdmin(msg, command, text):
 		return
 	success = False
 	if command == '/abl':
-		db.blocklist.add(text)
+		blocklist.add(text)
 		success = True
 	if command == '/apl':
-		db.popularlist.add(text)
+		popularlist.add(text)
 		success = True
 	if success:
 		autoDestroy(msg.reply_text('success'), 0.1)

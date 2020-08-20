@@ -1,7 +1,8 @@
 import os
 import yaml
-from telegram_util import commitRepo
+from telegram_util import commitRepo, isInt, matchKey
 import plain_db
+from .common import bot, debug_group, twitterApi
 
 def getUserId(text, twitterApi):
 	try:
@@ -40,31 +41,24 @@ def getChannels(bot, sub, text):
 			except:
 				...
 
-def isInt(text):
-	try:
-		int(text)
-		return True
-	except:
-		return False
-
 class Subscription(object):
 	def __init__(self):
-		with open('db/user_sub') as f:
-			self.user_sub = yaml.load(f, Loader=yaml.FullLoader)
-		with open('db/key_sub') as f:
-			self.key_sub = yaml.load(f, Loader=yaml.FullLoader)
+		with open('db/subscription') as f:
+			self._db = yaml.load(f, Loader=yaml.FullLoader)
 
-	def add(self, chat_id, text, twitterApi):
+	def add(self, chat_id, text):
 		if not text:
 			return
 		user_id = None
-		if '/' in text or isInt(text):
-			user_id = getUserId(text, twitterApi)
-		if user_id:
-			tryAdd(self.user_sub, chat_id, user_id)
-		else:
-			tryAdd(self.key_sub, chat_id, text)
-		self.save()
+		if matchKey(text, ['/', '@']) or isInt(text):
+			user_id = getUserId(text)
+		text = user_id or text
+		self._db[chat_id] = self._db.get(chat_id, [])
+		if text in self._db[chat_id]:
+			return False
+		self._db[chat_id].remove(text)
+		# commitRepo() # testing
+		return True
 
 	def remove(self, chat_id, text, twitterApi):
 		user_id = getUserId(text, twitterApi)
@@ -97,12 +91,31 @@ class Subscription(object):
 			f.write(yaml.dump(self.key_sub, sort_keys=True, indent=2, allow_unicode=True))
 		commitRepo(delay_minute=0)
 
-class DB(object):
-	def __init__(self):
-		self.reload()
+def hasPermission(chat_id):
+	try:
+		r = bot.send_message(chat_id, 'test')
+		r.delete()
+		return True
+	except:
+		return False
 
-	def reload(self):
-		self.blocklist = plain_db.loadKeyOnlyDB('blocklist')
-		self.popularlist = plain_db.loadKeyOnlyDB('popularlist')
-		self.existing = plain_db.loadKeyOnlyDB('existing')
-		self.sub = Subscription()
+def batchAdd(old_dict):
+	for chat_id in old_dict:
+		if not hasPermission(chat_id):
+			continue
+		items = old_dict.get(chat_id)
+		for item in items:
+			subscription.add(chat_id, item)
+
+def migrate():
+	with open('db/user_sub') as f:
+		user_sub = yaml.load(f, Loader=yaml.FullLoader)
+	with open('db/key_sub') as f:
+		key_sub = yaml.load(f, Loader=yaml.FullLoader)
+	batchAdd(key_sub)
+	batchAdd(user_sub)
+	
+blocklist = plain_db.loadKeyOnlyDB('blocklist')
+popularlist = plain_db.loadKeyOnlyDB('popularlist')
+existing = plain_db.loadKeyOnlyDB('existing')
+subscription = Subscription()
