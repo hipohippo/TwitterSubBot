@@ -9,6 +9,7 @@ import album_sender
 from db import blocklist, existing, subscription
 from common import tele, debug_group, twitterApi
 from util import getHash, passFilter
+import random
 
 processed_channels = set()
 
