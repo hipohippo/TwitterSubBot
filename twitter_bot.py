@@ -36,7 +36,7 @@ def shouldProcess(channel, status, key):
 	return True
 
 def shouldSendAlbum(channel, album):
-	thash = str(''.join(album.cap[:10].split())) + str(channel.id)
+	thash = str(''.join(album.cap[:20].split())) + str(channel.id)
 	if not existing.add(thash):
 		return False
 	if album.video or album.imgs:
