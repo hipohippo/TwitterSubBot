@@ -11,7 +11,6 @@ from common import tele, debug_group, twitterApi
 from util import getHash, passFilter
 
 processed_channels = set()
-status_cache = {}
 
 def getStatuses(key):
 	try:
@@ -49,11 +48,9 @@ def loopImp():
 	processed_channels = set()
 	channels = list(subscription.getChannels())
 	for key in subscription.keys():
-		if key in status_cache:
-			statuses = status_cache[key]
-		else:
-			status_cache[key] = getStatuses(key)
-		for status in status_cache[key]: # getStatuses(key):
+		if isinstance(key, str) and random.random() > 0.1:
+			continue
+		for status in getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					print(2)
@@ -68,7 +65,7 @@ def loopImp():
 
 def twitterLoop():
 	loopImp()
-	threading.Timer(1, twitterLoop).start() # testing 10 * 60
+	threading.Timer(10 * 60, twitterLoop).start()
 
 def handleAdmin(msg, command, text):
 	if not text:
