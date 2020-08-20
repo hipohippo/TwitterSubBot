@@ -11,6 +11,7 @@ from common import tele, debug_group, twitterApi
 from util import getHash, passFilter
 
 processed_channels = set()
+status_cache = {}
 
 def getStatuses(key):
 	try:
@@ -38,11 +39,18 @@ def loopImp():
 	processed_channels = set()
 	channels = list(subscription.getChannels())
 	for key in subscription.keys():
-		for status in getStatuses(key):
+		if status_cache.get(key):
+			statuses = status_cache[key]
+		else:
+			status_cache[key] = getStatuses(key)
+		for status in status_cache[key]: # getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
 						print(channel.username, key, status.id)
+						print('')
+						print(status)
+						print('')
 						album = twitter_2_album.get(str(status.id))
 						album_sender.send_v2(channel, album)
 					except Exception as e:
