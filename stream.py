@@ -15,6 +15,7 @@ def getTid(data):
 
 def getAlbum(data):
 	tid = getTid(data)
+	print(data, tid)
 	if tid in cache:
 		for r in cache[tid]:
 			r.delete()
