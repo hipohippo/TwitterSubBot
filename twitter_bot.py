@@ -25,6 +25,8 @@ def getStatuses(key):
 def shouldProcess(channel, status, key):
 	if channel.id in processed_channels:
 		return False
+	if status._json.get('in_reply_to_status_id'):
+		return False
 	if not passFilter(channel, status, key):
 		return False
 	thash = str(getHash(status)) + str(channel.id)
@@ -56,9 +58,9 @@ def loopImp():
 				if shouldProcess(channel, status, key):
 					try:
 						if channel.username == 'twitter_read':
-							print(key, status._json.get('in_reply_to_status_id'), status.id)
+							print(key, status.id)
 						album = twitter_2_album.get(str(status.id))
-						if shouldSendAlbum(channel, album):
+						if shouldSendAlbum(channel, status, album):
 							album_sender.send_v2(channel, album)
 					except Exception as e:
 						print('send fail', channel.id, str(e), status.id)	
