@@ -13,9 +13,13 @@ from util import getHash, passFilter
 processed_channels = set()
 
 def getStatuses(key):
-	if isinstance(key, int):
-		return twitterApi.user_timeline(key)
-	return twitterApi.search(key, result_type='popular')
+	try:
+		if isinstance(key, int):
+			return twitterApi.user_timeline(key)
+		return twitterApi.search(key, result_type='popular')
+	except Exception as e:
+		print('getStatuses fail', str(e), key)
+		return []
 
 def shouldProcess(channel, status, key):
 	if channel.id in processed_channels:
