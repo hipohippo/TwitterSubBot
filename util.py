@@ -34,8 +34,10 @@ def tooOld(data): # for migration purpose
 
 def passFilter(channel, status, key):
 	data = status._json
+	print(1)
 	if tooOld(data): # for hash migration
 		return False
+	print('here')
 	chat_id = channel.id
 	if key not in subscription._db.get(chat_id, []):
 		return False

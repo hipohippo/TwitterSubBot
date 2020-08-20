@@ -38,7 +38,6 @@ def loopImp():
 	processed_channels = set()
 	channels = list(subscription.getChannels())
 	for key in subscription.keys():
-		print('key', key)
 		for status in getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
