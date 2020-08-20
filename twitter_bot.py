@@ -6,11 +6,9 @@ from telegram.ext import Updater, MessageHandler, Filters
 import yaml
 from db import DB
 import threading
-from stream import Stream, shouldProcess
 import tweepy
 import twitter_2_album
 import album_sender
-import time
 
 db = DB()
 
@@ -20,30 +18,15 @@ with open('CREDENTIALS') as f:
 tele = Updater(credential['bot'], use_context=True)  # @twitter_send_bot
 debug_group = tele.bot.get_chat(420074357)
 
-HELP_MESSAGE = '''
-Subscribe Twitter posts.
-
-commands:
-/tw_subscribe user_link/user_id/keywords
-/tw_unsubscribe user_link/user_id/keywords
-/tw_view - view current subscription
-
-Can be used in group/channel also.
-
-Github： https://github.com/gaoyunzhi/twitter_bot
-'''
-
 auth = tweepy.OAuthHandler(credential['twitter_consumer_key'], credential['twitter_consumer_secret'])
 auth.set_access_token(credential['twitter_access_token'], credential['twitter_access_secret'])
 twitterApi = tweepy.API(auth)
-
-twitter_stream = Stream(db, twitterApi, tele.bot)
 
 def getRetweetedId(status):
 	return status._json.get('retweeted_status', {}).get('id')
 
 @log_on_fail(debug_group)
-def searchKeys():
+def loopImp():
 	for key in list(db.sub.keys()):
 		for status in twitterApi.search(key, result_type='popular'):
 			if 'id' not in status._json or not shouldProcess(status._json, db):
@@ -66,13 +49,7 @@ def searchKeys():
 					continue
 
 def twitterLoop():
-	try:
-		twitter_stream.reload()
-		db.reload()
-	except Exception as e:
-		debug_group.send_message('twitter_stream reload error ' + str(e))
-	searchKeys()
-	print('twitterLoop')
+	loopImp()
 	threading.Timer(10 * 60, twitterLoop).start()
 
 def handleAdmin(msg, command, text):
@@ -101,11 +78,9 @@ def handleCommand(update, context):
 	success = False
 	if 'unsub' in command:
 		db.sub.remove(msg.chat_id, text, twitterApi)
-		twitter_stream.forceReload()
 		success = True
 	elif 'sub' in command:
 		db.sub.add(msg.chat_id, text, twitterApi)
-		twitter_stream.forceReload()
 		success = True
 	r = msg.reply_text(db.sub.get(msg.chat_id, twitterApi), 
 		parse_mode='markdown', disable_web_page_preview=True)
@@ -113,6 +88,9 @@ def handleCommand(update, context):
 		tryDelete(msg)
 		if success:
 			autoDestroy(r, 0.1)
+
+with open('help.md') as f:
+	HELP_MESSAGE = f.read()
 
 def handleHelp(update, context):
 	update.message.reply_text(HELP_MESSAGE)
@@ -122,9 +100,7 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
-	twitter_stream.forceReload()
-	searchKeys()
-	threading.Timer(10 * 60, twitterLoop).start() 
+	threading.Timer(1, twitterLoop).start() 
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))

@@ -21,8 +21,11 @@ def getAlbum(data):
 	cache[tid] = []
 	if 'delete' in data:
 		return tid, None
-	print(tid)
-	time.sleep(10)
+	try:
+		print(tid, data['user']['id'], data['user']['name'])
+	except:
+		print(tid, data['user']['id'])
+	time.sleep(1)
 	return tid, twitter_2_album.get(str(tid))
 
 class UserUpdateListender(tweepy.StreamListener):
@@ -32,15 +35,19 @@ class UserUpdateListender(tweepy.StreamListener):
 		super().__init__()
 
 	def on_data(self, data):
-		data = yaml.load(data, Loader=yaml.FullLoader)
-		tid, r = getAlbum(data)
-		if not r:
-			return
-		for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
-			try:
-				cache[tid] += album_sender.send_v2(channel, r)
-			except Exception as e:
-				print('send fail for user', channel.id, str(e))
+		print(1)
+		try:
+			data = yaml.load(data, Loader=yaml.FullLoader)
+			tid, r = getAlbum(data)
+			if not r:
+				return
+			for channel in self.db.sub.channelsForUser(self.bot, data['user']['id']):
+				try:
+					cache[tid] += album_sender.send_v2(channel, r)
+				except Exception as e:
+					print('send fail for user', channel.id, str(e))
+		except Exception as e:
+			print('on_data failed for user', str(e), data)
 
 	def on_error(self, status_code):
 		return
