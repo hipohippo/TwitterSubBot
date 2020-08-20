@@ -22,7 +22,7 @@ def getCount(data):
 	return count
 
 def passKeyFilter(data):
-	return getCount(data) > 10000
+	return getCount(data) > 100000
 
 def passMasterFilter(data):
 	if matchKey(str(data), blocklist.items()):

@@ -33,6 +33,14 @@ def shouldProcess(channel, status, key):
 	processed_channels.add(channel.id)
 	return True
 
+def shouldSendAlbum(channel, album):
+	thash = str(getHash(album.cap[:10])) + str(channel.id)
+	if not existing.add(thash):
+		return False
+	if album.video or album.imgs:
+		return True
+	return len(album.cap) > 20
+
 @log_on_fail(debug_group)
 def loopImp():
 	global processed_channels 
@@ -50,7 +58,8 @@ def loopImp():
 						if channel.username == 'twitter_read':
 							print(key, status._json.get('in_reply_to_status_id'), status.id)
 						album = twitter_2_album.get(str(status.id))
-						album_sender.send_v2(channel, album)
+						if shouldSendAlbum(channel, album):
+							album_sender.send_v2(channel, album)
 					except Exception as e:
 						print('send fail', channel.id, str(e), status.id)	
 
