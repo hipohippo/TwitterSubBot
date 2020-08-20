@@ -15,13 +15,14 @@ def getTid(data):
 
 def getAlbum(data):
 	tid = getTid(data)
-	print(data, tid)
 	if tid in cache:
 		for r in cache[tid]:
 			r.delete()
 	cache[tid] = []
 	if 'delete' in data:
 		return tid, None
+	print(tid)
+	time.sleep(10)
 	return tid, twitter_2_album.get(str(tid))
 
 class UserUpdateListender(tweepy.StreamListener):
