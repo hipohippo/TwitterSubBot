@@ -45,7 +45,6 @@ class UserUpdateListender(tweepy.StreamListener):
 
 def getCount(data):
 	try:
-		data = data['retweeted_status']
 		return int(data.get('retweet_count')) + int(
 			data.get('favorite_count') + 
 			int(data.get('retweet_count', 0)) +
@@ -66,8 +65,6 @@ def shouldProcess(data, db):
 		bar *= 10
 	if isRich(data):
 		bar /= 10
-	print('getCount(data)', data, getCount(data))
-	print('')
 	return getCount(data) > bar
 
 class Stream(object):
