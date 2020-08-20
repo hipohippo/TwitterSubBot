@@ -17,8 +17,10 @@ def getCountInner(data):
 		return 0
 
 def getCount(data):
-	return (getCountInner(data.get('retweeted_status', {})) / 3 + 
+	count = (getCountInner(data.get('retweeted_status', {})) / 3 + 
 		getCountInner(data))
+	print('count', count)
+	return count
 
 def passKeyFilter(data):
 	return getCount(data) > 100000
