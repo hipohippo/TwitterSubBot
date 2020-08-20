@@ -16,8 +16,7 @@ def getCountInner(data):
 	except Exception as e:
 		return 0
 
-def getCount(status):
-	data = status._json
+def getCount(data):
 	return (getCountInner(data.get('retweeted_status', {})) / 3 + 
 		getCountInner(data))
 
