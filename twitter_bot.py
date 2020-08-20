@@ -36,7 +36,7 @@ def shouldProcess(channel, status, key):
 	return True
 
 def shouldSendAlbum(channel, album):
-	thash = str(getHash(album.cap[:10])) + str(channel.id)
+	thash = str(''.join(album.cap[:10].split())) + str(channel.id)
 	if not existing.add(thash):
 		return False
 	if album.video or album.imgs:
@@ -56,14 +56,14 @@ def loopImp():
 		for status in status_cache[key]: # getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
-					# try:
-					if channel.username == 'twitter_read':
-						print(key, status.id)
-					album = twitter_2_album.get(str(status.id))
-					if shouldSendAlbum(channel, album):
-						album_sender.send_v2(channel, album)
-					# except Exception as e:
-					# 	print('send fail', channel.id, str(e), status.id)	
+					try:
+						if channel.username == 'twitter_read':
+							print(key, status.id)
+						album = twitter_2_album.get(str(status.id))
+						if shouldSendAlbum(channel, album):
+							album_sender.send_v2(channel, album)
+					except Exception as e:
+						print('send fail', channel.id, str(e), status.id)	
 
 def twitterLoop():
 	loopImp()
