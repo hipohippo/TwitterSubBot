@@ -18,32 +18,11 @@ def getCountInner(data):
 
 def getCount(status):
 	data = status._json
-	return getCountInner(data.get('retweeted_status', {})) / 3 + getCountInner(data)
+	return (getCountInner(data.get('retweeted_status', {})) / 3 + 
+		getCountInner(data))
 
-def isRich(data):
-	return 'expanded_url' in str(data)
-
-def shouldProcess(data, db):
-	if 'delete' in data:
-		return True
-	if matchKey(str(data), db.blocklist.items):
-		return False
-	bar = 1000000
-	if matchKey(str(data), db.popularlist.items):
-		bar *= 10
-	if isRich(data):
-		bar /= 10
-	return getCount(data) > bar
-
-def shouldApplyFilter(chat_id, key):
-	return not isinstance(key, int):
-		return subscription.filterOnUser(chat_id)
-	return subscription.filterOnKey(chat_id)
-
-def passKeyFilter(card):
-	if matchKey(str(card), popularlist.items()):
-		return weiboo.getCount(card) > 10000
-	return weiboo.getCount(card) > 1000
+def passKeyFilter(data):
+	return getCount(data) > 100000
 
 def passMasterFilter(data):
 	if matchKey(str(data), db.blocklist.items):
