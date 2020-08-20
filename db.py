@@ -72,7 +72,7 @@ class Subscription(object):
 		for chat_id in self._db:
 			result.update(self._db[chat_id])
 		for key in list(result):
-			if matchKey(key, ['filter']):
+			if isinstance(key, str) and matchKey(key, ['filter']):
 				result.remove(key)
 		return result
 
