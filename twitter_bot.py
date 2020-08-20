@@ -39,7 +39,7 @@ def loopImp():
 	processed_channels = set()
 	channels = list(subscription.getChannels())
 	for key in subscription.keys():
-		if status_cache.get(key):
+		if key in status_cache:
 			statuses = status_cache[key]
 		else:
 			status_cache[key] = getStatuses(key)
