@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo
-from telegram.ext import Updater, MessageHandler, Filters
+from telegram.ext import MessageHandler, Filters
 import threading
 import twitter_2_album
 import album_sender

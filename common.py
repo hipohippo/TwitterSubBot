@@ -1,6 +1,6 @@
 import yaml
-import threading
 import tweepy
+from telegram.ext import Updater 
 
 with open('CREDENTIALS') as f:
 	credential = yaml.load(f, Loader=yaml.FullLoader)
