@@ -45,7 +45,7 @@ def shouldSendAlbum(channel, album):
 
 @log_on_fail(debug_group)
 def loopImp():
-	removeOldFiles()
+	removeOldFiles('tmp')
 	global processed_channels 
 	processed_channels = set()
 	channels = list(subscription.getChannels())
