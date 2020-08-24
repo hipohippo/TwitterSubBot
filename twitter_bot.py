@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo
+from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo, removeOldFiles
 from telegram.ext import MessageHandler, Filters
 import threading
 import twitter_2_album
@@ -45,6 +45,7 @@ def shouldSendAlbum(channel, album):
 
 @log_on_fail(debug_group)
 def loopImp():
+	removeOldFiles()
 	global processed_channels 
 	processed_channels = set()
 	channels = list(subscription.getChannels())

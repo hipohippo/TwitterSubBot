@@ -76,7 +76,13 @@ class Subscription(object):
 		for key in list(result):
 			if isinstance(key, str) and matchKey(key, ['filter']):
 				result.remove(key)
-		return result
+		final_result = []
+		for key in result:
+			if isinstance(key, int):
+				final_result = [key] + final_result
+			else:
+				final_result.append(key)
+		return final_result
 
 	def hasMasterFilter(self, chat_id):
 		return 'hasMasterFilter' in self._db[chat_id]
