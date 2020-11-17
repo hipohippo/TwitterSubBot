@@ -53,7 +53,10 @@ class Subscription(object):
 		for text in self._db.get(chat_id, []):
 			user = None
 			if isinstance(text, int):
-				user = twitterApi.get_user(text)
+				try:
+					user = twitterApi.get_user(text)
+				except:
+					print('twitterApi.get_user fail', text)
 			if user:
 				item = '[%s](%s)' % (user.name, 
 					'https://twitter.com/' + str(user.screen_name))
