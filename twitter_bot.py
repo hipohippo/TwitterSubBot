@@ -31,7 +31,6 @@ def shouldProcess(channel, status, key):
 		return False
 	if status.id < 1328815025662914561:
 		return False # timestamp cut
-	print(status.id)
 	thash = str(getHash(status)) + str(channel.id)
 	if not existing.add(thash):
 		return False
