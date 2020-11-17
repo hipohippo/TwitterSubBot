@@ -57,6 +57,7 @@ class Subscription(object):
 					user = twitterApi.get_user(text)
 				except:
 					print('twitterApi.get_user fail', text)
+					continue
 			if user:
 				item = '[%s](%s)' % (user.name, 
 					'https://twitter.com/' + str(user.screen_name))
