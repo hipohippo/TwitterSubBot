@@ -29,7 +29,7 @@ def shouldProcess(channel, status, key):
 		return False
 	if not passFilter(channel, status, key):
 		return False
-	if status.id < 1328747143230787586:
+	if status.id < 1328762507524263938:
 		return False # timestamp cut
 	print(status.id)
 	thash = str(getHash(status)) + str(channel.id)
