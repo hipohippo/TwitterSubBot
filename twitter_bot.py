@@ -57,6 +57,8 @@ def loopImp():
 		for status in getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
+					with open('tmp_status', 'a') as f:
+						f.write(str(status) + '\n\n')
 					try:
 						album = twitter_2_album.get(str(status.id))
 						if shouldSendAlbum(channel, album):
