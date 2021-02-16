@@ -29,7 +29,7 @@ def shouldProcess(channel, status, key):
 		return False
 	if not passFilter(channel, status, key):
 		return False
-	if status.id < 1328815025662914561:
+	if status.id < 1361617669598957569:
 		return False # timestamp cut
 	thash = str(getHash(status)) + str(channel.id)
 	if not existing.add(thash):
@@ -66,7 +66,8 @@ def loopImp():
 
 def twitterLoop():
 	loopImp()
-	threading.Timer(10 * 60, twitterLoop).start()
+	threading.Timer(10, twitterLoop).start()
+	# threading.Timer(10 * 60, twitterLoop).start()
 
 def handleAdmin(msg, command, text):
 	if not text:
