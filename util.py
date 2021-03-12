@@ -41,4 +41,6 @@ def passFilter(channel, status, key):
 		return getCount(data) > 100
 	if not isinstance(key, int) and not passKeyFilter(data):
 		return False
+	if subscription.hasUserFilter(chat_id):
+		return getCount(data) > 100
 	return True

@@ -53,9 +53,9 @@ def loopImp():
 	global processed_channels 
 	processed_channels = set()
 	channels = list(subscription.getChannels())
-	for key in subscription.keys():
-		if isinstance(key, str) and random.random() > 0.1:
-			continue
+	for key in ['hometimeline']:#subscription.keys():
+		# if isinstance(key, str) and random.random() > 0.1:
+		# 	continue
 		for status in getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
