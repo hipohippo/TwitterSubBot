@@ -16,7 +16,6 @@ processed_channels = set()
 def getStatuses(key):
 	try:
 		if key == 'hometimeline':
-			print(twitterApi.me())
 			return twitterApi.home_timeline()
 		if isinstance(key, int):
 			return twitterApi.user_timeline(key)
@@ -54,9 +53,9 @@ def loopImp():
 	global processed_channels 
 	processed_channels = set()
 	channels = list(subscription.getChannels())
-	for key in ['hometimeline']:#subscription.keys():
-		# if isinstance(key, str) and random.random() > 0.1:
-		# 	continue
+	for key in subscription.keys():
+		if isinstance(key, str) and random.random() > 0.1:
+			continue
 		for status in getStatuses(key):
 			for channel in channels:
 				if shouldProcess(channel, status, key):
