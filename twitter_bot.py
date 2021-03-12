@@ -16,6 +16,7 @@ processed_channels = set()
 def getStatuses(key):
 	try:
 		if key == 'hometimeline':
+			print(twitterApi.me())
 			return twitterApi.home_timeline()
 		if isinstance(key, int):
 			return twitterApi.user_timeline(key)
