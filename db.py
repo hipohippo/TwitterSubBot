@@ -91,6 +91,9 @@ class Subscription(object):
 	def hasMasterFilter(self, chat_id):
 		return 'hasMasterFilter' in self._db[chat_id]
 
+	def hasUserFilter(self, chat_id):
+		return 'hasUserFilter' in self._db[chat_id]
+
 	def save(self):
 		with open('db/subscription', 'w') as f:
 			f.write(yaml.dump(self._db, sort_keys=True, indent=2, allow_unicode=True))
