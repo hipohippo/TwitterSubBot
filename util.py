@@ -38,6 +38,7 @@ def passFilter(channel, status, key):
 		not passMasterFilter(data)):
 		return False
 	if key == 'hometimeline':
+		print(data)
 		return getCount(data) > 100
 	if not isinstance(key, int) and not passKeyFilter(data):
 		return False
