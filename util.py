@@ -38,9 +38,9 @@ def passFilter(channel, status, key):
 		not passMasterFilter(data)):
 		return False
 	if key == 'hometimeline':
-		return getCount(data) > 100
+		return getCount(data) > 200
 	if not isinstance(key, int) and not passKeyFilter(data):
 		return False
 	if subscription.hasUserFilter(chat_id):
-		return getCount(data) > 100
+		return getCount(data) > 200
 	return True
