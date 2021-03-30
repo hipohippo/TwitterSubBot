@@ -1,4 +1,4 @@
-from telegram_util import matchKey
+from telegram_util import matchKey, isCN
 from db import blocklist, subscription
 
 def getHash(status):
