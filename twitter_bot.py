@@ -100,6 +100,7 @@ def handleCommand(update, context):
 	elif 'sub' in command:
 		subscription.add(msg.chat_id, text)
 		success = True
+	print('here')
 	r = msg.reply_text(subscription.getSubscription(msg.chat_id), 
 		parse_mode='markdown', disable_web_page_preview=True)
 	if msg.chat_id < 0:
