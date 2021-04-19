@@ -38,6 +38,7 @@ def passFilter(channel, status, key):
 		not passMasterFilter(data)):
 		return False
 	if key == 'hometimeline':
+		print(status)
 		if isCN(str(status)):
 			return getCount(data) > 200
 		else:
