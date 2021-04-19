@@ -38,12 +38,11 @@ def passFilter(channel, status, key):
 		not passMasterFilter(data)):
 		return False
 	if key == 'hometimeline':
-		if not status.entities.get('media'):
-			return getCount(data) > 10000
 		if status.lang == 'zh':
 			return getCount(data) > 200
-		else:
-			return getCount(data) > 1000
+		if not status.entities.get('media'):
+			return getCount(data) > 10000
+		return getCount(data) > 1000
 	if not isinstance(key, int) and not passKeyFilter(data):
 		return False
 	if subscription.hasUserFilter(chat_id):
