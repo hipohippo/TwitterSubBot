@@ -53,14 +53,16 @@ def loopImp():
 	global processed_channels 
 	processed_channels = set()
 	channels = list(subscription.getChannels())
-	for key in ['hometimeline']: # subscription.keys():
+	for key in subscription.keys():
 		if key != 'hometimeline' and isinstance(key, str) and random.random() > 0.1:
 			continue
 		for status in getStatuses(key):
+			# print(status.lang)
+			# print(status.entities.get('media'))
+			# print('http://twitter.com/%s/status/%s' % (
+			# 	status.user.screen_name or status.user.id, status.id))
 			for channel in channels:
 				if shouldProcess(channel, status, key):
-					with open('tmp_status', 'a') as f:
-						f.write(str(status) + '\n\n')
 					try:
 						album = twitter_2_album.get(str(status.id), 
 							origin = [str(channel.id), channel.username])
