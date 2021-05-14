@@ -101,4 +101,5 @@ class Subscription(object):
 	
 blocklist = plain_db.loadKeyOnlyDB('blocklist')
 existing = plain_db.loadKeyOnlyDB('existing')
+log_existing = plain_db.loadKeyOnlyDB('log_existing')
 subscription = Subscription()

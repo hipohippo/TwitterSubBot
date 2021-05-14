@@ -6,10 +6,11 @@ from telegram.ext import MessageHandler, Filters
 import threading
 import twitter_2_album
 import album_sender
-from db import blocklist, existing, subscription
-from common import tele, debug_group, twitterApi
+from db import blocklist, existing, subscription, log_existing
+from common import tele, debug_group, twitterApi, logger
 from util import getHash, passFilter
 import random
+import time
 
 processed_channels = set()
 
@@ -47,6 +48,19 @@ def shouldSendAlbum(channel, album):
 		return True
 	return len(album.cap) > 20
 
+def log(key, status):
+	url = 'http://twitter.com/%s/status/%d' % (status.user.screen_name or status.user.id, status.id)
+	if not log_existing.add(url):
+		return
+	time.sleep(5)
+	log_message = '%s %s channel_id: %s site: %s' % (
+		message, getChannelsLog(channels), 
+		' '.join([str(channel.id) for channel in channels]), site)
+	logger.send_message(log_message, parse_mode='html')
+
+
+
+
 @log_on_fail(debug_group)
 def loopImp():
 	removeOldFiles('tmp')
@@ -57,10 +71,7 @@ def loopImp():
 		if key != 'hometimeline' and isinstance(key, str) and random.random() > 0.1:
 			continue
 		for status in getStatuses(key):
-			# print(status.lang)
-			# print(status.entities.get('media'))
-			# print('http://twitter.com/%s/status/%s' % (
-			# 	status.user.screen_name or status.user.id, status.id))
+			log(key, status)
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
