@@ -53,13 +53,8 @@ def log(key, status):
 	if not log_existing.add(url):
 		return
 	time.sleep(5)
-	log_message = '%s %s channel_id: %s site: %s' % (
-		message, getChannelsLog(channels), 
-		' '.join([str(channel.id) for channel in channels]), site)
-	logger.send_message(log_message, parse_mode='html')
-
-
-
+	log_message = '%s key: %s' % (url, key)
+	logger.send_message(log_message)
 
 @log_on_fail(debug_group)
 def loopImp():
