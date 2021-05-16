@@ -48,12 +48,16 @@ def shouldSendAlbum(channel, album):
 		return True
 	return len(album.cap) > 20
 
-def log(key, status):
+def log(key, status, sent):
 	url = 'http://twitter.com/%s/status/%d' % (status.user.screen_name or status.user.id, status.id)
 	if not log_existing.add(url):
 		return
 	time.sleep(5)
 	log_message = '%s key: %s' % (url, key)
+	if sent:
+		log_message += ' twitter_read_sent'
+	if key != 'hometimeline':
+		log_message += ' twitter_log_ignore'
 	logger.send_message(log_message)
 
 @log_on_fail(debug_group)
@@ -66,7 +70,7 @@ def loopImp():
 		if key != 'hometimeline' and isinstance(key, str) and random.random() > 0.1:
 			continue
 		for status in getStatuses(key):
-			log(key, status)
+			sent = False
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
@@ -74,8 +78,10 @@ def loopImp():
 							origin = [str(channel.id), channel.username])
 						if shouldSendAlbum(channel, album):
 							album_sender.send_v2(channel, album)
+							sent = True
 					except Exception as e:
 						print('send fail', channel.id, str(e), status.id)	
+			log(key, status, sent)
 
 def twitterLoop():
 	loopImp()
