@@ -8,7 +8,7 @@ import twitter_2_album
 import album_sender
 from db import blocklist, existing, subscription, log_existing
 from common import tele, debug_group, twitterApi, logger
-from util import getHash, passFilter
+from util import getHash, passFilter, getCount
 import random
 import time
 
@@ -50,10 +50,12 @@ def shouldSendAlbum(channel, album):
 
 def log(key, status, sent):
 	url = 'http://twitter.com/%s/status/%d' % (status.user.screen_name or status.user.id, status.id)
+	if getCount(status._json) < 20:
+		return
 	if not log_existing.add(url):
 		return
 	time.sleep(5)
-	log_message = '%s key: %s' % (url, key)
+	log_message = '%s %s key: %s' % (status.text, url, key)
 	if sent:
 		log_message += ' twitter_read_sent'
 	if key != 'hometimeline':

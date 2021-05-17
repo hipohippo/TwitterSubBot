@@ -9,10 +9,7 @@ def getHash(status):
 
 def getCountInner(data):
 	try:
-		return int(data.get('retweet_count')) + int(
-			data.get('favorite_count') + 
-			int(data.get('retweet_count', 0)) +
-			int(data.get('favorite_count', 0)))
+		return int(data.get('retweet_count', 0)) + int(data.get('favorite_count', 0))
 	except Exception as e:
 		return 0
 
