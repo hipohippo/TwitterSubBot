@@ -105,7 +105,7 @@ def handleAdmin(msg, command, text):
 def handleCommand(update, context):
 	msg = update.effective_message
 	command, text = splitCommand(msg.text)
-	if msg.chat.username in ['b4cxb', 'twitter_read']:
+	if msg.chat.username in ['twitter_read']:
 		handleAdmin(msg, command, text)
 	if not msg or not msg.text.startswith('/tw'):
 		return
