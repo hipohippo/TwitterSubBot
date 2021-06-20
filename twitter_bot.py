@@ -20,7 +20,7 @@ def getStatuses(key):
 			return twitterApi.home_timeline()
 		if isinstance(key, int):
 			return twitterApi.user_timeline(user_id=key)
-		return twitterApi.search(key, result_type='popular')
+		return twitterApi.search_tweets(key, result_type='popular')
 	except Exception as e:
 		print('getStatuses fail', str(e), key)
 		return []
