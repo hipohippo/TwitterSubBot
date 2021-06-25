@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import log_on_fail, matchKey
+from telegram_util import log_on_fail, matchKey, getMatchedKey
 import twitter_2_album
 import album_sender
 from db import existing, blocklist
@@ -59,8 +59,9 @@ def search(key, count):
 			continue
 		if key == 'hometimeline':
 			addKey(status.user, count, status.user)
-		if not matchKey(str(status), keywords.items()):
+		if not matchKey(status.text, keywords.items()):
 			continue
+		print(' '.join(status.text.split())[:20], getMatchedKey(status.text, keywords.items()))
 		send(status)
 		try:
 			addKey(status.retweeted_status.user, count * 0.8, status.user)
