@@ -11,7 +11,7 @@ from common import tele, debug_group, twitterApi, logger
 from util import getHash, passFilter, getCount
 import random
 import time
-from search_by_keywords_twitter import search
+from search_by_keywords_twitter import runsearch
 
 processed_channels = set()
 
@@ -135,7 +135,7 @@ def handleStart(update, context):
 		update.message.reply_text(HELP_MESSAGE)
 
 if __name__ == '__main__':
-	search('hometimeline', 1000) # testing
+	runsearch() # testing
 	threading.Timer(1, twitterLoop).start() 
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
