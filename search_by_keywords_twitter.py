@@ -36,20 +36,18 @@ def send(status):
 	if shouldSendAlbum(channel, album):
 		try:
 			album_sender.send_v2(channel, album)
-		except:
+		except Exception as e:
 			debug_group.send_message('send fail. error: %s, url: %s' % (e, album.url))	
 
 def addKey(user, count, referer):
 	if user.id not in existed_keys:
 		existed_keys.add(user.id)
 		queue.append((user.id, count))
-		print('add_new_key https://twitter.com/%s, referer: https://twitter.com/%s' % (user.screen_name, referer.screen_name))
 
 @log_on_fail(debug_group)
 def search(key, count):
 	if count < 20:
 		return
-	print('search_result_len', key, len(getSearchResult(key, count) or []))
 	for status in getSearchResult(key, count) or []:
 		if status._json.get('in_reply_to_status_id'):
 			continue
@@ -61,7 +59,6 @@ def search(key, count):
 			addKey(status.user, count, status.user)
 		if not matchKey(status.text, keywords.items()):
 			continue
-		print(' '.join(status.text.split())[:20], getMatchedKey(status.text, keywords.items()))
 		send(status)
 		try:
 			addKey(status.retweeted_status.user, count * 0.8, status.user)
