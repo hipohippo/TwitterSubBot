@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, commitRepo, removeOldFiles
+from telegram_util import log_on_fail, splitCommand, matchKey, autoDestroy, tryDelete, removeOldFiles, getChannelsLog
 from telegram.ext import MessageHandler, Filters
 import threading
 import twitter_2_album
@@ -49,14 +49,16 @@ def shouldSendAlbum(channel, album):
 		return True
 	return len(album.cap) > 20
 
-def log(key, status, sent):
+def log(key, status, sent, channels):
 	url = 'http://twitter.com/%s/status/%d' % (status.user.screen_name or status.user.id, status.id)
 	if getCount(status._json) < 20:
 		return
 	if not log_existing.add(url):
 		return
 	time.sleep(5)
-	log_message = '%s %s key: %s' % (status.text, url, key)
+	log_message = '%s %s key: %s channel_id: %s %s' % (status.text, 
+		url, key, ' '.join([str(channel.id) for channel in channels]), 
+		getChannelsLog(channels))
 	if sent:
 		log_message += ' twitter_read_sent'
 	if key != 'hometimeline':
@@ -84,7 +86,7 @@ def loopImp():
 							sent = True
 					except Exception as e:
 						print('send fail', channel.id, str(e), status.id)	
-			log(key, status, sent)
+			log(key, status, sent, channels)
 
 def twitterLoop():
 	loopImp()
@@ -100,7 +102,6 @@ def handleAdmin(msg, command, text):
 	if success:
 		autoDestroy(msg.reply_text('success'), 0.1)
 		tryDelete(msg)
-		commitRepo(delay_minute=0)
 
 @log_on_fail(debug_group)
 def handleCommand(update, context):
