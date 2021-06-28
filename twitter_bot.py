@@ -11,7 +11,7 @@ from common import tele, debug_group, twitterApi, logger
 from util import getHash, passFilter, getCount
 import random
 import time
-from search_by_keywords_twitter import runsearch
+from keywords_bfs import runsearch
 
 processed_channels = set()
 
@@ -49,21 +49,23 @@ def shouldSendAlbum(channel, album):
 		return True
 	return len(album.cap) > 20
 
-def log(key, status, sent, channels):
+def log(key, status, sent):
 	url = 'http://twitter.com/%s/status/%d' % (status.user.screen_name or status.user.id, status.id)
 	if getCount(status._json) < 20:
 		return
 	if not log_existing.add(url):
 		return
 	time.sleep(5)
-	log_message = '%s %s key: %s channel_id: %s %s' % (status.text, 
-		url, key, ' '.join([str(channel.id) for channel in channels]), 
-		getChannelsLog(channels))
+	log_message = '%s %s key: %s' % (status.text, url, key)
+	addition = ''
 	if sent:
-		log_message += ' twitter_read_sent'
-	if key != 'hometimeline':
-		log_message += ' twitter_log_ignore'
-	logger.send_message(log_message)
+		addition += ' channel_id: %s %s' % (' '.join([str(channel.id) for channel in sent]), getChannelsLog(sent))
+		if key == 'hometimeline':
+			additon += ' twitter_read_sent'
+	try:
+		logger.send_message(log_message + addition, parse_mode='html')
+	except Exception as e:
+		logger.send_message('%s log_error: %s' % (log_message, e))
 
 @log_on_fail(debug_group)
 def loopImp():
@@ -75,7 +77,7 @@ def loopImp():
 		if key != 'hometimeline' and isinstance(key, str) and random.random() > 0.1:
 			continue
 		for status in getStatuses(key):
-			sent = False
+			sent = []
 			for channel in channels:
 				if shouldProcess(channel, status, key):
 					try:
@@ -83,10 +85,10 @@ def loopImp():
 							origin = [str(channel.id), channel.username])
 						if shouldSendAlbum(channel, album):
 							album_sender.send_v2(channel, album)
-							sent = True
+							sent.append(channel)
 					except Exception as e:
 						print('send fail', channel.id, str(e), status.id)	
-			log(key, status, sent, channels)
+			log(key, status, sent)
 
 def twitterLoop():
 	loopImp()
