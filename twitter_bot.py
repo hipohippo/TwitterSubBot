@@ -61,7 +61,7 @@ def log(key, status, sent):
 	if sent:
 		addition += ' channel_id: %s %s' % (' '.join([str(channel.id) for channel in sent]), getChannelsLog(sent))
 		if key == 'hometimeline':
-			additon += ' twitter_read_sent'
+			addition += ' twitter_read_sent'
 	try:
 		logger.send_message(log_message + addition, parse_mode='html')
 	except Exception as e:
