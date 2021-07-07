@@ -114,14 +114,20 @@ def handleCommand(update, context):
 	if not msg or not msg.text.startswith('/tw'):
 		return
 	success = False
+	r = None
 	if 'unsub' in command:
 		subscription.remove(msg.chat_id, text)
 		success = True
 	elif 'sub' in command:
 		subscription.add(msg.chat_id, text)
 		success = True
-	r = msg.reply_text(subscription.getSubscription(msg.chat_id), 
-		parse_mode='markdown', disable_web_page_preview=True)
+	elif 'expand' in command:
+		threading.Timer(1, runsearch).start() 	
+		r = msg.reply_text('ack')	
+		success = True
+	if not r:
+		r = msg.reply_text(subscription.getSubscription(msg.chat_id), 
+			parse_mode='markdown', disable_web_page_preview=True)
 	if msg.chat_id < 0:
 		tryDelete(msg)
 		if success:
@@ -139,7 +145,6 @@ def handleStart(update, context):
 
 if __name__ == '__main__':
 	threading.Timer(1, twitterLoop).start() 
-	threading.Timer(1, runsearch).start() 
 	dp = tele.dispatcher
 	dp.add_handler(MessageHandler(Filters.command, handleCommand))
 	dp.add_handler(MessageHandler(Filters.private & (~Filters.command), handleHelp))
