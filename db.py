@@ -6,7 +6,7 @@ from common import bot, twitterApi
 def getUserId(text):
 	try:
 		screenname = text.split('?')[0].strip('@').strip('/').split('/')[-1]
-		user = twitterApi.get_user(screenname)
+		user = twitterApi.get_user(screen_name=screenname)
 		return user.id
 	except:
 		...
@@ -54,7 +54,7 @@ class Subscription(object):
 			user = None
 			if isinstance(text, int):
 				try:
-					user = twitterApi.get_user(text)
+					user = twitterApi.get_user(user_id=text)
 				except:
 					print('twitterApi.get_user fail', text)
 					continue
