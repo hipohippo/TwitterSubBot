@@ -51,7 +51,7 @@ def search(key, count):
 	for status in getSearchResult(key, count) or []:
 		if status._json.get('in_reply_to_status_id'):
 			continue
-		if status.lang != 'zh' or getCount(status._json) < 50:
+		if status.lang != 'zh' or getCount(status._json) < 200:
 			continue
 		if matchKey(str(status), blocklist.items()):
 			continue
