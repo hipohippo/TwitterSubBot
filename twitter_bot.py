@@ -85,6 +85,8 @@ def loopImp():
 					try:
 						album = twitter_2_album.get(str(status.id), 
 							origin = [str(channel.id), channel.username])
+						if album.imgs and 'Apple18192' in album.url:
+							album.cap = '' # 只发图片不发文字
 						if shouldSendAlbum(channel, album):
 							album_sender.send_v2(channel, album)
 							sent.append(channel)
