@@ -29,7 +29,6 @@ def shouldSendAlbum(channel, album):
 
 def send(status):
 	thash = str(getHash(status)) + str(channel.id)
-	print(thash)
 	if not existing.add(thash):
 		return
 	album = twitter_2_album.get(str(status.id), 
@@ -54,27 +53,43 @@ def search(key, count):
 			continue
 		if status.lang != 'zh' or getCount(status._json) < 200:
 			continue
-		# if matchKey(str(status), blocklist.items()):
-		# 	continue
-		# if key == 'hometimeline':
-		# 	addKey(status.user, count, status.user)
-		# if not matchKey(status.text, keywords.items()):
-		# 	continue
+		if matchKey(str(status), blocklist.items()):
+			continue
+		if key == 'hometimeline':
+			addKey(status.user, count, status.user)
+		if not matchKey(status.text, keywords.items()):
+			continue
 		send(status)
-		# try:
-		# 	addKey(status.retweeted_status.user, count * 0.8, status.user)
-		# except:
-		# 	...
+		try:
+			addKey(status.retweeted_status.user, count * 0.8, status.user)
+		except:
+			...
 
 def runsearch():
-	search(1337114973013762048, 10000)
-	# pivot = 0
-	# while len(queue) > pivot:
-	# 	key, count = queue[pivot]
-	# 	search(key, count)
-	# 	pivot += 1
-	# print('finish run search')
+	pivot = 0
+	while len(queue) > pivot:
+		key, count = queue[pivot]
+		search(key, count)
+		pivot += 1
+	print('finish run search')
+
+def backfillUser(user_id):
+	search_result =  twitterApi.user_timeline(user_id=user_id, count=200)
+	while search_result:
+		for status in search_result:
+			if status._json.get('in_reply_to_status_id'):
+				continue
+			if getCount(status._json) < 200:
+				continue
+			try:
+				status.retweeted_status
+				continue
+			except:
+				...
+			send(status)
+		max_id = min([status.id for status in search_result]) - 1
+		search_result = twitterApi.user_timeline(user_id=user_id, count=200, max_id=max_id)
 
 # if __name__ == '__main__':
-# 	search('hometimeline', 1000)
-
+# 	backfillUser(1337114973013762048)
+	# search('hometimeline', 1000)
