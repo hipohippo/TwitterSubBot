@@ -29,6 +29,7 @@ def shouldSendAlbum(channel, album):
 
 def send(status):
 	thash = str(getHash(status)) + str(channel.id)
+	print(thash)
 	if not existing.add(thash):
 		return
 	album = twitter_2_album.get(str(status.id), 
@@ -53,25 +54,26 @@ def search(key, count):
 			continue
 		if status.lang != 'zh' or getCount(status._json) < 200:
 			continue
-		if matchKey(str(status), blocklist.items()):
-			continue
-		if key == 'hometimeline':
-			addKey(status.user, count, status.user)
-		if not matchKey(status.text, keywords.items()):
-			continue
+		# if matchKey(str(status), blocklist.items()):
+		# 	continue
+		# if key == 'hometimeline':
+		# 	addKey(status.user, count, status.user)
+		# if not matchKey(status.text, keywords.items()):
+		# 	continue
 		send(status)
-		try:
-			addKey(status.retweeted_status.user, count * 0.8, status.user)
-		except:
-			...
+		# try:
+		# 	addKey(status.retweeted_status.user, count * 0.8, status.user)
+		# except:
+		# 	...
 
 def runsearch():
-	pivot = 0
-	while len(queue) > pivot:
-		key, count = queue[pivot]
-		search(key, count)
-		pivot += 1
-	print('finish run search')
+	search(1337114973013762048, 10000)
+	# pivot = 0
+	# while len(queue) > pivot:
+	# 	key, count = queue[pivot]
+	# 	search(key, count)
+	# 	pivot += 1
+	# print('finish run search')
 
 # if __name__ == '__main__':
 # 	search('hometimeline', 1000)
